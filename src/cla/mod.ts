@@ -9,14 +9,13 @@
 /**
  * Interface for getInput options
  */
- export interface InputOptions {
-    /** Optional. Whether the input is required. If required and not present, will throw. Defaults to false */
-    required?: boolean
-  
-    /** Optional. Whether leading/trailing whitespace will be trimmed for the input. Defaults to true */
-    trimWhitespace?: boolean
-  }
-  
+export interface InputOptions {
+  /** Optional. Whether the input is required. If required and not present, will throw. Defaults to false */
+  required?: boolean;
+
+  /** Optional. Whether leading/trailing whitespace will be trimmed for the input. Defaults to true */
+  trimWhitespace?: boolean;
+}
 
 /**
  * Gets the value of an input.
@@ -27,19 +26,19 @@
  * @param     options  optional. See InputOptions.
  * @returns   string
  */
- export function getInput(name: string, options?: InputOptions): string {
-    const val: string =
-      Deno.env.get(`INPUT_${name.replace(/ /g, '_').toUpperCase()}`) || ''
-    if (options && options.required && !val) {
-      throw new Error(`Input required and not supplied: ${name}`)
-    }
-  
-    if (options && options.trimWhitespace === false) {
-      return val
-    }
-  
-    return val.trim()
+export function getInput(name: string, options?: InputOptions): string {
+  const val: string =
+    Deno.env.get(`INPUT_${name.replace(/ /g, "_").toUpperCase()}`) || "";
+  if (options && options.required && !val) {
+    throw new Error(`Input required and not supplied: ${name}`);
   }
 
-console.log(getInput("branch"))
-console.log(getInput("signatures-path"))
+  if (options && options.trimWhitespace === false) {
+    return val;
+  }
+
+  return val.trim();
+}
+
+console.log("branch", getInput("branch"));
+console.log("signatures-path", getInput("signatures-path"));
