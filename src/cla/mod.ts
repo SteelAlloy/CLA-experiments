@@ -40,5 +40,6 @@ export function getInput(name: string, options?: InputOptions): string {
   return val.trim();
 }
 
+console.log(Deno.env.toObject())
 console.log("branch", getInput("branch"));
 console.log("signatures-path", getInput("signatures-path"));
