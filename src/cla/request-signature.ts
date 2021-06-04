@@ -1,11 +1,9 @@
 
-export function requestCLASignature(param1: string) {
+export function requestCLASignature() {
     // tbd - e.g. using https://github.com/marketplace/actions/cla-assistant-lite
     // CLAAssistant.requestCLASignature()
 
-    console.log(`hello akshay - ${param1}`)
+    console.log(`hello akshay - ${Deno.args}`)
 }
 
-const param1 = Deno.args[0]
-
-requestCLASignature(param1)
+requestCLASignature()
