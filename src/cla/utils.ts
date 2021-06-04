@@ -8,6 +8,12 @@ export function warning(message: string) {
   issue("warning", message);
 }
 
+export function info(message: string) {
+    console.log(escapeData(message));
+    issue("", message);
+    issue("info", message);
+}
+
 export function issue(command: string, message = "") {
   command ||= "missing.command";
   console.log(`${CMD_STRING}${command}${CMD_STRING}${escapeData(message)}`);
