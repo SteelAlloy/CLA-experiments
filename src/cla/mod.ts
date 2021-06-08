@@ -7,7 +7,7 @@ function main(): void {
   core.error("error test");
   core.info("info test");
   core.setFailed("fail test") */
-  console.log(Deno.env.toObject);
+  console.log(Deno.env.toObject());
 }
 
 main();
