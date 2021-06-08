@@ -51,5 +51,8 @@ runs:
         deno_install="$HOME/.deno/bin"
         echo $deno_install >> $GITHUB_PATH
       shell: bash
-    - run: deno run -A --unstable ${{ github.action_path }}/mod.ts ${{ inputs.branch }}
+    - run: |
+        echo $INPUT_BRANCH
+        echo $INPUT_SIGNATURES_PATH
+        deno run -A --unstable ${{ github.action_path }}/mod.ts ${{ inputs.branch }}
       shell: bash
