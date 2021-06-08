@@ -9,7 +9,7 @@ function main(): void {
   core.setFailed("fail test") */
   console.log(Deno.env.toObject());
   console.log("---------");
-  const gh_env = Deno.env.get("GITHUB_ENV");
+  const gh_env = Deno.env.get("GITHUB_EVENT_PATH");
   if (gh_env !== undefined) {
     console.log(Deno.readTextFileSync(gh_env))
   }
