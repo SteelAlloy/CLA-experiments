@@ -8,6 +8,11 @@ function main(): void {
   core.info("info test");
   core.setFailed("fail test") */
   console.log(Deno.env.toObject());
+  console.log("---------");
+  const gh_env = Deno.env.get("GITHUB_ENV");
+  if (gh_env !== undefined) {
+    console.log(Deno.readTextFileSync(gh_env))
+  }
 }
 
 main();
