@@ -1,4 +1,4 @@
-import { context, octokit } from "../utils.ts";
+import { context, personalOctokit } from "../utils.ts";
 import { CommittersDetails } from "./interfaces.ts";
 
 const query = `
@@ -41,7 +41,7 @@ query getCommitters($owner:String! $name:String! $number:Int! $cursor:String!) {
 }`
 
 export async function getCommitters(): Promise<CommittersDetails[]> {
-  const response: any = await octokit.graphql(query.replace(/( |\t)/g, ""), {
+  const response: any = await personalOctokit.graphql(query.replace(/( |\t)/g, ""), {
     owner: context.repo.owner,
     name: context.repo.repo,
     number: context.issue.number,
