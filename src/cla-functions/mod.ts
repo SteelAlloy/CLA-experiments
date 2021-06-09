@@ -9,6 +9,8 @@ export default async function cla(rawOptions: CLAOptions) {
 
   setupOptions(rawOptions);
 
+  console.log(options);
+
   try {
     if (
       context.payload.action === "closed" && options.lockPullRequestAfterMerge
@@ -18,8 +20,7 @@ export default async function cla(rawOptions: CLAOptions) {
       await setup();
     }
   } catch (error) {
-    console.log("debug:", options.debug)
-    if (options.debug) action.debug(String(error.stack));
+    action.debug(String(error.stack));
     action.fatal(String(error.message), ExitCode.FatalError);
   }
 }
