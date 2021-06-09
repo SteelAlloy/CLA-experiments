@@ -67,7 +67,7 @@ async function getCLAFileContentandSHA(
     action.fatal("No content", -1);
   } else {
     const sha = result.data.sha;
-    const claFileContent = JSON.parse(btoa(result.data.content));
+    const claFileContent = JSON.parse(atob(result.data.content));
     return { claFileContent, sha };
   }
 }
