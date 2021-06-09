@@ -11,11 +11,9 @@ inputs:
     required: false
   branch:
     description: "provide a branch where all the signatures are stored"
-    default: ""
     required: false
   allowlist:
     description: "users in the allow list don't have to sign the CLA document"
-    default: ""
     required: false
   # WIP
 runs:
