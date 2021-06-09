@@ -21,7 +21,6 @@ export interface CLAOptions {
   allSignedPrComment?: string;
   notSignedPrComment?: string;
   prSignComment?: string;
-  debug?: boolean;
 }
 
 export type ParsedCLAOptions = Omit<
@@ -76,7 +75,6 @@ export async function setupOptions(opts: CLAOptions) {
     "<br/>Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that $you sign our [Contributor License Agreement](${input.getPathToDocument()}) before we can accept your contribution. You can sign the CLA by just posting a Pull Request Comment same as the below format.<br/>";
   opts.prSignComment ??=
     "I have read the CLA Document and I hereby sign the CLA";
-  opts.debug ??= false;
 
   options = opts as ParsedCLAOptions;
 }

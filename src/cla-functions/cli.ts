@@ -7,5 +7,4 @@ cla({
   ...flags, // TODO: sanitize inputs
   githubToken: String(flags._[0] ?? ""),
   personalAccessToken: String(flags._[1] ?? ""),
-  debug: Boolean(flags.debug),
 });
