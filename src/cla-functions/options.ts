@@ -5,6 +5,7 @@ import {
   octokit,
   personalOctokit,
 } from "../utils.ts";
+import { ExitCode } from "./exit.ts";
 
 export interface CLAOptions {
   githubToken: string;
@@ -30,7 +31,23 @@ export let options: ParsedCLAOptions;
 export let remoteRepo: boolean;
 
 export async function setupOptions(opts: CLAOptions) {
+  opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
+  opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
+
+  if (opts.githubToken === "") {
+    action.fatal(
+      "Missing github token. Please provide one as an environment variable.",
+      ExitCode.MissingGithubToken,
+    );
+  }
+  if (opts.personalAccessToken === "") {
+    action.fatal(
+      "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
+      ExitCode.MissingPersonalAccessToken,
+    );
+  }
   initOctokit(opts.githubToken, opts.personalAccessToken);
+  
   if (opts.remoteOrgName !== undefined) {
     if (opts.remoteRepoName === undefined) {
       action.fatal("Please provide a repository name.", -1);
