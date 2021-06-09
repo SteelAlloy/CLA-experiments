@@ -7,7 +7,7 @@ import type { CLAOptions } from "./options.ts";
 export default async function cla(rawOptions: CLAOptions) {
   action.info("Contributor Assistant: CLA process started");
 
-  setupOptions(rawOptions);
+  await setupOptions(rawOptions);
 
   try {
     if (
