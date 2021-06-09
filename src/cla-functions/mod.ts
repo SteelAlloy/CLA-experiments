@@ -18,6 +18,7 @@ export default async function cla(rawOptions: CLAOptions) {
       await setup();
     }
   } catch (error) {
+    console.log("debug:", options.debug)
     if (options.debug) action.debug(String(error.stack));
     action.fatal(String(error.message), ExitCode.FatalError);
   }
