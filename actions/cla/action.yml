@@ -30,6 +30,5 @@ runs:
         echo $deno_install >> $GITHUB_PATH
       shell: bash
     - run: |
-        echo ${{ github.action_path }}
-        deno run --allow-net --allow-env ${{ github.action_path }}/../../src/cla/cli.ts --branch ${{ inputs.branch }}
+        deno run --allow-net --allow-env ${{ github.action_path }}/../../src/cla-functions/cli.ts --branch ${{ inputs.branch }}
       shell: bash
