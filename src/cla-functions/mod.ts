@@ -9,8 +9,6 @@ export default async function cla(rawOptions: CLAOptions) {
 
   setupOptions(rawOptions);
 
-  console.log(options);
-
   try {
     if (
       context.payload.action === "closed" && options.lockPullRequestAfterMerge

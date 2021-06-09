@@ -34,6 +34,8 @@ export async function setupOptions(opts: CLAOptions) {
   opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
   opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
 
+  action.debug("Raw options", opts);
+
   if (opts.githubToken === "") {
     action.fatal(
       "Missing github token. Please provide one as an environment variable.",
@@ -77,4 +79,5 @@ export async function setupOptions(opts: CLAOptions) {
     "I have read the CLA Document and I hereby sign the CLA";
 
   options = opts as ParsedCLAOptions;
+  action.debug("Parsed options", options)
 }
