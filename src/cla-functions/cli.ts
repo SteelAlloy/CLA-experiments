@@ -7,5 +7,5 @@ cla({
   ...flags, // TODO: sanitize inputs
   githubToken: String(flags._[0] ?? ""),
   personalAccessToken: String(flags._[1] ?? ""),
-  branch: flags.branch || undefined,
+  branch: typeof flags.branch === "string" ? flags.branch : undefined,
 });
