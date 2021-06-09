@@ -2,7 +2,7 @@ import { context, personalOctokit } from "../utils.ts";
 import { CommittersDetails } from "./interfaces.ts";
 
 const query = `
-query getCommitters($owner:String! $name:String! $number:Int! $cursor:String!) {
+query($owner:String! $name:String! $number:Int! $cursor:String!) {
   repository(owner: $owner, name: $name) {
       pullRequest(number: $number) {
           commits(first: 100, after: $cursor) {
