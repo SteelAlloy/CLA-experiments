@@ -11,5 +11,7 @@ cla({
   branch: typeof flags.branch === "string" ? flags.branch : undefined,
 }); */
 
-console.log(new TextDecoder().decode(Deno.readAllSync(Deno.stdin)))
+const json = new TextDecoder().decode(Deno.readAllSync(Deno.stdin))
+
 console.log(context.payload.comment);
+console.log(JSON.parse(json))
