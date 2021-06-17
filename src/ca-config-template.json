@@ -1,0 +1,13 @@
+{
+  "claConfig": {
+    "allowlist": ""
+  },
+
+  "notificationsConfig": {
+    "notificationChannel": ""
+  },
+
+  "rewardsConfig": {
+    "walletAddress": ""
+  }
+}
