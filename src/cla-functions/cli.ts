@@ -13,5 +13,6 @@ cla({
 
 const json = new TextDecoder().decode(Deno.readAllSync(Deno.stdin))
 
-console.log(context);
-console.log(JSON.parse(json))
+// console.log(context);
+console.log(Deno.inspect(json))
+// console.log(JSON.parse(json))
