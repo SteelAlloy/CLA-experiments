@@ -67,10 +67,10 @@ function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
   for (const key in obj) {
     // @ts-ignore
     if (obj[key] === undefined || obj[key] === "") {
-      delete obj[key]
+      delete obj[key];
     }
   }
-  return obj
+  return obj;
 }
 
 export function setupOptions(opts: CLAOptions) {
@@ -99,7 +99,9 @@ export function setupOptions(opts: CLAOptions) {
     opts.storage.owner ??= context.repo.owner;
   }
   opts.storage.path ||= ".github/contributor-assistant/cla.json";
+
   // storage.branch will defaults to the repository's default branch thanks to github API
+  opts.storage.branch ||= undefined;
 
   opts.ignoreList ??= [];
   opts.lockPRAfterMerge ??= true;
