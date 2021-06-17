@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/../../src/install-deno.sh
+    - run: sudo ${{ github.action_path }}/../../src/install-deno.sh
       shell: bash
     - run: |
         deno -V
