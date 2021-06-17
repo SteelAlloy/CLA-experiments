@@ -21,8 +21,9 @@ runs:
   steps:
     - run: |
         curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.0.0
-        export DENO_INSTALL="/home/runner/.deno"
-        export PATH="$DENO_INSTALL/bin:$PATH"
+        DENO_INSTALL="$HOME/.deno"
+        echo "DENO_INSTALL=$DENO_INSTALL" >> GITHUB_ENV
+        echo "$DENO_INSTALL/bin" >> $GITHUB_PATH
       shell: bash
     - run: |
         deno -V
