@@ -1,4 +1,5 @@
 import { parseFlags } from "../deps.ts";
+import { action } from "../utils.ts";
 import cla from "./mod.ts";
 
 const flags = parseFlags(Deno.args);
@@ -17,6 +18,8 @@ function parseBoolean(flag: unknown): boolean | undefined {
       return undefined;
   }
 }
+
+action.debug(Deno.inspect(flags));
 
 cla({
   githubToken: parseString(flags.githubToken) ?? "",
