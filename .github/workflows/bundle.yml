@@ -23,7 +23,8 @@ jobs:
       - name: Pull from main
         run: |
           git fetch origin main
-          git reset --hard origin/main
+          git reset --hard FETCH_HEAD
+          git clean -df
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
