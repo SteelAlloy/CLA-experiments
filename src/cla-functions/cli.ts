@@ -29,7 +29,7 @@ const flags = parseFlags(Deno.args, {
   },
 });
 
-action.debug(Deno.inspect(flags));
+action.debug("", Deno.inspect(flags));
 
 cla({
   githubToken: flags.githubToken,
