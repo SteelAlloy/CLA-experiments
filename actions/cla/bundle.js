@@ -1,3 +1,5 @@
-console.log("::warning::This code is not bundled.");
+import { action } from "../../src/utils.ts";
 
-import "../../src/cla-functions/cli.ts"
+action.warning("This code has not been bundled.");
+
+import "../../src/cla-functions/cli.ts";
