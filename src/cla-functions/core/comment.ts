@@ -107,9 +107,8 @@ function createBody(status: SignatureStatus, data: CLAData): string {
           body +=
             ` - :heavy_multiplication_x: ${coAuthor.name} (${coAuthor.email})\n`;
         }
-      } else {
-        body += "\n\n";
       }
+      body += "\n";
     }
   }
 
