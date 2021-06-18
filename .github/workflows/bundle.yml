@@ -23,10 +23,16 @@ jobs:
       - name: Pull from main
         run: git pull origin main
 
-      - name: Node.js setup
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           version: 14.x
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
 
       - name: Install esbuild
         run: npm install esbuild -g
