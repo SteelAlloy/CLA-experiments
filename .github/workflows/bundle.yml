@@ -21,7 +21,9 @@ jobs:
           ref: releases
       
       - name: Pull from main
-        run: git pull origin main --rebase
+        run: |
+          git pull origin main
+          git reset --hard origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
