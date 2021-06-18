@@ -17,13 +17,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        #with:
-        #  ref: releases
         with:
-          repository: cla-assistant/contributor-assistant
-          ref: refs/heads/releases
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
-          persist-credentials: false
+          ref: releases
       
       - name: Pull from main
         run: git pull origin main
