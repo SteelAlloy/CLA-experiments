@@ -1,0 +1,48 @@
+name: Bundle
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  bundle:
+    name: Bundle action files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        #with:
+        #  ref: releases
+        with:
+          repository: cla-assistant/contributor-assistant
+          ref: refs/heads/releases
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
+          persist-credentials: false
+      
+      - name: Pull from main
+        run: git pull origin main
+
+      - name: Node.js setup
+        uses: actions/setup-node@v1
+        with:
+          version: 14.x
+
+      - name: Install esbuild
+        run: npm install esbuild -g
+
+      - name: Run bundler
+        run: deno bundle src/cla-functions/cli.ts | esbuild --minify > actions/cla/bundle.js
+      
+      - name: Push to releases branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add actions/*
+          git commit -m "nightly bundle"
+          git push

@@ -1,6 +1,6 @@
 import { Author, CLAData, SignatureStatus } from "../types.ts";
 import { action, pr } from "../../utils.ts";
-import { applicationType } from "./meta.ts";
+import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 
 const commentAnchor = `<!-- ${applicationType} comment anchor -->`;
@@ -120,5 +120,5 @@ function createBody(status: SignatureStatus, data: CLAData): string {
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return body + text.footer.replace("${reTrigger}", input.reTrigger);
+  return body + text.footer.replace("${re-trigger}", input.reTrigger);
 }
