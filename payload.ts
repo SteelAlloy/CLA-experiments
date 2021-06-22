@@ -1,3 +1,3 @@
 import { context } from "./src/utils.ts";
 
-console.log(context.payload);
+console.log(Deno.inspect(context));
