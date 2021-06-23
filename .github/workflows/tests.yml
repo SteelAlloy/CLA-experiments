@@ -73,4 +73,5 @@ jobs:
           branch: releases
           default_author: github_actions
           message: Automated bundle
+          push: -f
           pull_strategy: 'NO-PULL'
