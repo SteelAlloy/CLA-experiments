@@ -47,10 +47,9 @@ jobs:
 
       - name: Pull from main
         run: |
-          git pull origin main --rebase
-          git rebase --skip
-        # git reset --hard FETCH_HEAD
-        # git clean -df
+          git fetch origin main
+          git reset --hard FETCH_HEAD
+          git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
