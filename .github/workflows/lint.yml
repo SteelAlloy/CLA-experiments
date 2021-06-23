@@ -34,6 +34,7 @@ jobs:
 
   bundle:
     needs: tests
+    if: contains(github.ref, "main")
     name: Bundle code
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -41,14 +42,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        with:
-          ref: releases
+      #   with:
+      #     ref: releases
       
-      - name: Pull from main
-        run: |
-          git fetch origin main
-          git reset --hard FETCH_HEAD
-          git clean -df
+      # - name: Pull from main
+      #   run: |
+      #     git fetch origin main
+      #     git reset --hard FETCH_HEAD
+      #     git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -69,7 +70,7 @@ jobs:
       
       - uses: EndBug/add-and-commit@v7
         with:
-          # branch: some-branch
+          branch: releases
           default_author: github_actions
           message: Automated bundle
 
