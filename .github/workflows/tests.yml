@@ -73,5 +73,5 @@ jobs:
           branch: releases
           default_author: github_actions
           message: Automated bundle
-          push: --force
-          # pull_strategy: '--rebase'
+          push: -f
+          pull_strategy: 'NO-PULL'
