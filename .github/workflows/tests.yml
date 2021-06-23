@@ -42,6 +42,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          ref: releases
+
+      - name: Pull from main
+        run: |
+          git pull origin main
+        # git reset --hard FETCH_HEAD
+        # git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
