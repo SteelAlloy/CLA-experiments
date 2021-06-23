@@ -24,6 +24,16 @@ export async function commentPR(
   }
 }
 
+export async function uncommentPR() {
+  const comments = await pr.listComments();
+  const botComment = comments.find((comment) =>
+    comment.body?.match(commentAnchor)
+  );
+  if (botComment !== undefined) {
+    await pr.deleteComment(botComment.id);
+  }
+}
+
 interface unsignedByAuthor {
   author: Author;
   coAuthors: Set<Author>;
@@ -48,6 +58,7 @@ function createBody(status: SignatureStatus, data: CLAData): string {
   - - -
   `;
 
+  let unknownCoAuthors = false;
   if (committerCount > 1) {
     body += `${text.summary}\n`
       .replace("${signed}", status.signed.length.toString())
@@ -102,6 +113,7 @@ function createBody(status: SignatureStatus, data: CLAData): string {
         body += `:x: @${author.user!.login} `;
       }
       if (coAuthors.size > 0) {
+        unknownCoAuthors = true;
         body += `${text.coAuthorWarning}\n`;
         for (const coAuthor of coAuthors) {
           body +=
@@ -112,7 +124,7 @@ function createBody(status: SignatureStatus, data: CLAData): string {
     }
   }
 
-  if (status.unknown.length > 0) {
+  if (status.unknown.length > 0 || unknownCoAuthors) {
     for (const committer of status.unknown) {
       body += `:grey_question: ${committer.name} (${committer.email}) \n`;
     }

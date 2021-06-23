@@ -62,6 +62,21 @@ export async function updateComment(id: number, body: string) {
   );
 }
 
+export async function deleteComment(id: number) {
+  const prNumber = context.issue.number;
+  await octokit.issues.deleteComment({
+    ...context.repo,
+    comment_id: id,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when deleting the pull request (#${prNumber}) comment #${id}: ${error.message}`,
+    );
+  });
+  action.debug(
+    `Successfully deleted the pull request (#${prNumber}) comment #${id}`,
+  );
+}
+
 export type Comments =
   RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"];
 
@@ -84,6 +99,57 @@ export async function listComments(): Promise<Comments> {
   } catch (error) {
     throw new Error(
       `Error occurred when fetching pull request (#${prNumber}) comments: ${error.message}`,
+    );
+  }
+}
+
+export async function addLabels(...labels: string[]) {
+  const prNumber = context.issue.number;
+  await octokit.issues.addLabels({
+    ...context.repo,
+    issue_number: prNumber,
+    labels,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when adding pull request (#${prNumber}) labels: ${error.message}`,
+    );
+  });
+}
+
+export async function removeLabel(name: string) {
+  const prNumber = context.issue.number;
+  await octokit.issues.removeLabel({
+    ...context.repo,
+    issue_number: prNumber,
+    name,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when removing pull request (#${prNumber}) label: ${error.message}`,
+    );
+  });
+}
+
+export async function getLabels(): Promise<string[]> {
+  const prNumber = context.issue.number;
+  const labels: string[] = [];
+  const iterator = octokit.paginate.iterator(
+    octokit.issues.listLabelsOnIssue,
+    {
+      ...context.repo,
+      issue_number: prNumber,
+      per_page: 100,
+    },
+  );
+  try {
+    for await (const response of iterator) {
+      for (const label of response.data) {
+        labels.push(label.name);
+      }
+    }
+    return labels;
+  } catch (error) {
+    throw new Error(
+      `Error occurred when fetching pull request (#${prNumber}) labels: ${error.message}`,
     );
   }
 }

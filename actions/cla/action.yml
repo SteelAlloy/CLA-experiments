@@ -30,13 +30,23 @@ inputs:
     description: A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. The separator between the patterns is a comma.
     required: false
   lock-pr-after-merge:
-    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Defaults to true.
+    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Setting this parameter to false is not recommended.
     required: false
+    default: "true"
   input-signature:
     description: The signature to be committed in order to sign the CLA.
     required: false
   input-re-trigger:
     description: The keyword to re-trigger signature checks.
+    required: false
+  signed-label:
+    description: A label that will be applied once all committers have signed the CLA
+    required: false
+  unsigned-label:
+    description: A label that will be applied until all committers have signed the CLA
+    required: false
+  ignore-label:
+    description: Add this label to skip the CLA checks
     required: false
 
 runs:
@@ -50,7 +60,7 @@ runs:
       shell: bash
       # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
     - run: |
-        deno run -Aq ${{ github.action_path }}/../../payload.ts \
+        deno run -Aq ${{ github.action_path }}/bundle.js \
           --githubToken ${{ inputs.GITHUB_TOKEN }} \
           --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
           --CLAPath ${{ inputs.cla-path }} \
@@ -62,4 +72,7 @@ runs:
           --lockPRAfterMerge ${{ inputs.lock-pr-after-merge }} \
           --inputSignature ${{ inputs.input-signature }} \
           --inputReTrigger ${{ inputs.input-re-trigger }}
+          --signedLabel ${{ inputs.signed-label }}
+          --unsignedLabel ${{ inputs.unsigned-label }}
+          --ignoreLabel ${{ inputs.ignore-label }}
       shell: bash
