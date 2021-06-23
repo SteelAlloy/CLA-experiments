@@ -45,11 +45,11 @@ jobs:
       #   with:
       #     ref: releases
       
-      - name: Pull from main
-        run: |
-          git fetch origin main
-          git reset --hard FETCH_HEAD
-          git clean -df
+      # - name: Pull from main
+      #   run: |
+      #     git fetch origin main
+      #     git reset --hard FETCH_HEAD
+      #     git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -76,7 +76,7 @@ jobs:
 
           # The flag used on the pull strategy. Use NO-PULL to avoid the action pulling at all.
           # Default: '--no-rebase'
-          # pull_strategy: 'NO-PULL or --no-rebase or --no-ff or --rebase'
+          pull_strategy: 'NO-PULL'
 
           # Arguments for the git tag command (the tag name always needs to be the first word not preceded by an hyphen)
           # Default: ''
