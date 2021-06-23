@@ -48,10 +48,11 @@ async function run() {
   const committers = filterIgnored(await getCommitters());
 
   const status = getSignatureStatus(committers, content.data);
+  action.debug("Signature status", status);
 
   const comments = await pr.listComments();
   updateSignatures(comments, status, content.data);
-  action.debug("Signature status", status);
+  action.debug("Updated signature status", status);
 
   await commentPR(comments, status, content.data);
 
