@@ -98,6 +98,10 @@ export function updateSignatures(
       data.signatures,
       (signatory) => signatory.user?.databaseId === author.user!.databaseId,
     );
+    spliceArray(
+      status.signed,
+      (signatory) => signatory.user?.databaseId === author.user!.databaseId,
+    );
     status.unsigned.push(author);
     // remove coAuthors
     for (const coAuthor of data.signatures) {
@@ -106,5 +110,6 @@ export function updateSignatures(
       }
     }
     spliceArray(data.signatures, hasCoAuthoredSigned(author.user!.databaseId));
+    spliceArray(status.signed, hasCoAuthoredSigned(author.user!.databaseId));
   }
 }
