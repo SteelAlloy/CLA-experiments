@@ -33,9 +33,9 @@ jobs:
         run: deno test --allow-net --allow-env
 
   bundle:
+    name: Bundle
     needs: tests
     if: contains(github.ref, 'main')
-    name: Bundle code
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -45,11 +45,11 @@ jobs:
       #   with:
       #     ref: releases
       
-      # - name: Pull from main
-      #   run: |
-      #     git fetch origin main
-      #     git reset --hard FETCH_HEAD
-      #     git clean -df
+      - name: Pull from main
+        run: |
+          git fetch origin main
+          git reset --hard FETCH_HEAD
+          git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
