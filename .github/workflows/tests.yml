@@ -1,11 +1,11 @@
-name: Lint
+name: Tests
 
 on:
   push:
   pull_request:
 
 jobs:
-  tests:
+  quality:
     name: Code quality checks
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -34,7 +34,7 @@ jobs:
 
   bundle:
     name: Bundle
-    needs: tests
+    needs: quality
     if: contains(github.ref, 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -42,14 +42,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      #   with:
-      #     ref: releases
-      
-      # - name: Pull from main
-      #   run: |
-      #     git fetch origin main
-      #     git reset --hard FETCH_HEAD
-      #     git clean -df
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -74,19 +66,4 @@ jobs:
           default_author: github_actions
           message: Automated bundle
           push: --force
-
-          # The flag used on the pull strategy. Use NO-PULL to avoid the action pulling at all.
-          # Default: '--no-rebase'
-          pull_strategy: 'NO-PULL'
-
-          # Arguments for the git tag command (the tag name always needs to be the first word not preceded by an hyphen)
-          # Default: ''
-          # tag: 'v1.0.0 --force'
-
-      # - name: Push to releases branch
-      #   run: |
-      #     git config user.name github-actions
-      #     git config user.email github-actions@github.com
-      #     git add actions/*
-      #     git commit -m "nightly bundle"
-      #     git push -f
+          # pull_strategy: 'NO-PULL'
