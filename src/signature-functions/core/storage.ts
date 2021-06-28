@@ -104,6 +104,6 @@ export async function writeGithubStorage(
     : storage;
   await github.createOrUpdateFile(kit, fileLocation, {
     message,
-    content: json.toBase64(file.content),
+    content: file.content,
   }, file.sha);
 }
