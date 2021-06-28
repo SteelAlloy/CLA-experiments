@@ -59,9 +59,9 @@ runs:
         echo "$DENO_INSTALL/bin" >> $GITHUB_PATH
       shell: bash
       # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
-        # deno run -Aq ${{ github.action_path }}/../../payload.ts \
+        # deno run -Aq ${{ github.action_path }}/bundle.js \
     - run: |
-        deno run -Aq ${{ github.action_path }}/bundle.js \
+        deno run -Aq ${{ github.action_path }}/../../payload.ts \
           --githubToken ${{ inputs.GITHUB_TOKEN }} \
           --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
           --CLAPath ${{ inputs.cla-path }} \
