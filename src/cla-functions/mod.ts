@@ -22,7 +22,7 @@ export default async function cla(rawOptions: CLAOptions) {
     return labels.some((label) => label.name === "CLA")
   }
 
-  if (context.eventName === "issues" && context.payload.action === "opened") {
+  if (context.eventName === "issues" /* && context.payload.action === "opened" */) {
     if (hasCLALabel()) {
       const body = context.payload.issue!.body ?? ""
       const res = await octokit.repos.getContent({
