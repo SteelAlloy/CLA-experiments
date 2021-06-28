@@ -80,7 +80,10 @@ export function writeSignatureStorage(storage: StorageContent) {
       return writeGithubStorage({
         content: JSON.stringify(storage.content),
         sha: storage.sha,
-      }, options.storage);
+      }, options.storage, `${
+        options.message.commit.signed
+          .replace("${signatory}", context.payload.issue!.user.login)
+      }. Closes #${context.issue.number}`);
     default:
       action.fail("Unknown storage type");
   }
@@ -89,6 +92,7 @@ export function writeSignatureStorage(storage: StorageContent) {
 export async function writeGithubStorage(
   file: github.Content,
   storage: Required<LocalStorage | RemoteGithubStorage>,
+  message: string,
 ) {
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
@@ -99,10 +103,7 @@ export async function writeGithubStorage(
     }
     : storage;
   await github.createOrUpdateFile(kit, fileLocation, {
-    message: `${
-      options.message.commit.signed
-        .replace("${signatory}", context.payload.issue!.user.login)
-    }. Closes #${context.issue.number}`,
+    message,
     content: json.toBase64(file.content),
   }, file.sha);
 }

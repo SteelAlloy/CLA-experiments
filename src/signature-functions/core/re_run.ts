@@ -67,5 +67,5 @@ export async function writeReRunStorage(file: ReRunContent) {
   }, {
     type: "local",
     ...options.reRun,
-  });
+  }, "Updating re-run storage");
 }
