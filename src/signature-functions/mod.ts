@@ -68,9 +68,9 @@ async function run() {
       run.pullRequest === context.issue.number;
 
     if (status.unsigned.length === 0) {
-      spliceArray(storage.content, isCurrentWorkflow);
+      spliceArray(storage.content.data, isCurrentWorkflow);
     } else {
-      const run = storage.content.find(isCurrentWorkflow) ?? {
+      const run = storage.content.data.find(isCurrentWorkflow) ?? {
         pullRequest: context.issue.number,
         workflow: context.runId,
         unsigned: status.unsigned,

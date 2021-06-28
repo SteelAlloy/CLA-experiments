@@ -2,7 +2,7 @@ import { action, context, normalizeText, pr } from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
 import { readGithubStorage, writeGithubStorage } from "./storage.ts";
-import type { ReRunData } from "./types.ts";
+import type { ReRunStorage } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
@@ -47,7 +47,7 @@ export const defaultReRunContent = {
 };
 
 export interface ReRunContent {
-  content: ReRunData;
+  content: ReRunStorage;
   sha: string;
 }
 
