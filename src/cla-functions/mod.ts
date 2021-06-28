@@ -9,7 +9,7 @@ import { action, checkStorageContent, context, pr, octokit } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
 import type { CLAOptions } from "./options.ts";
 import { parseIssue } from "./core/parser.ts";
-import { lexer, parseYaml } from "../deps.ts";
+import { marked, parseYaml } from "../deps.ts";
 
 /** The entry point for the CLA Assistant */
 export default async function cla(rawOptions: CLAOptions) {
@@ -31,7 +31,7 @@ export default async function cla(rawOptions: CLAOptions) {
       });
       // @ts-ignore
       const content: Form = parseYaml(atob(res.data.content));
-      const metadata = parseIssue(content,lexer(body));
+      const metadata = parseIssue(content,marked.lexer(body));
       console.log(metadata)
     }
   }
