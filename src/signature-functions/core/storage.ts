@@ -56,7 +56,8 @@ export async function readGithubStorage(
     }
     : storage;
   try {
-    return github.getFile(kit, fileLocation);
+    const content = await github.getFile(kit, fileLocation);
+    return content;
   } catch (error) {
     if (error.status === 404) {
       return github.createOrUpdateFile(kit, fileLocation, {
