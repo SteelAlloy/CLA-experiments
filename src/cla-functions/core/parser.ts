@@ -2,7 +2,7 @@ import type { Form } from "./types.ts";
 
 interface QA {
   question: string;
-  answer: string | null;
+  answer: string;
   id?: string;
 }
 
@@ -43,11 +43,13 @@ export function parseIssue(form: Form, issue: marked.TokensList): MetaData[] {
         break;
       }
       const text = token.value.text;
-      result.push({
-        id: input.id,
-        question: input.attributes.label,
-        answer: text === noResponse ? null : text,
-      });
+      if (text !== noResponse) {
+        result.push({
+          id: input.id,
+          question: input.attributes.label,
+          answer: text,
+        });
+      }
     } else if (token.value.type === "list") {
       if (input.type !== "checkboxes") break;
       result.push({
@@ -66,11 +68,3 @@ export function parseIssue(form: Form, issue: marked.TokensList): MetaData[] {
   if (!token.done) throw new Error("Error while parsing issue form");
   return result;
 }
-
-// const yml = parse(Deno.readTextFileSync("./cla.yml"));
-
-// console.log(yml);
-
-// const lexer = marked.lexer(Deno.readTextFileSync("./issue.md"));
-
-// console.log(lexer);
