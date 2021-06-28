@@ -70,12 +70,16 @@ async function run() {
     if (status.unsigned.length === 0) {
       spliceArray(storage.content.data, isCurrentWorkflow);
     } else {
-      const run = storage.content.data.find(isCurrentWorkflow) ?? {
-        pullRequest: context.issue.number,
-        workflow: context.runId,
-        unsigned: status.unsigned,
-      };
-      run.unsigned = status.unsigned;
+      const run = storage.content.data.find(isCurrentWorkflow);
+      if (run === undefined) {
+        storage.content.data.push({
+          pullRequest: context.issue.number,
+          workflow: context.runId,
+          unsigned: status.unsigned.map((author) => author.user!.databaseId),
+        });
+      } else {
+        run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+      }
     }
 
     return writeReRunStorage(storage);
