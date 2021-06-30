@@ -4,7 +4,7 @@ import { context, octokit, personalOctokit } from "./src/utils.ts";
 
 console.log(Deno.inspect(context));
 
-personalOctokit.issues.createLabel({
+await personalOctokit.issues.createLabel({
     ...context.repo,
     name: "CLA",
     color: "1DC515",
