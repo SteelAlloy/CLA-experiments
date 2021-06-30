@@ -79,7 +79,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
   const { content, sha } = await storage.readGithub(
     {
       type: "local",
-      ...options.reRun,
+      ...options.storage.reRun,
     },
     JSON.stringify(defaultReRunContent),
     "Creating re-run storage",
@@ -94,6 +94,6 @@ async function writeReRunStorage(file: ReRunContent) {
     sha: file.sha,
   }, {
     type: "local",
-    ...options.reRun,
+    ...options.storage.reRun,
   }, "Updating re-run storage");
 }
