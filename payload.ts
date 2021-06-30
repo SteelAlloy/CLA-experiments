@@ -1,10 +1,10 @@
-import { context, octokit } from "./src/utils.ts";
+import { context, octokit, personalOctokit } from "./src/utils.ts";
 
 // console.log(context.eventName);
 
 console.log(Deno.inspect(context));
 
-octokit.issues.createLabel({
+personalOctokit.issues.createLabel({
     ...context.repo,
     name: "CLA",
     color: "1DC515",
