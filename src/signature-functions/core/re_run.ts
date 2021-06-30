@@ -1,25 +1,28 @@
-import { action, context, normalizeText, pr } from "../../utils.ts";
+import {
+  action,
+  context,
+  github,
+  normalizeText,
+  pr,
+  spliceArray,
+  storage,
+} from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
-import { readGithubStorage, writeGithubStorage } from "./storage.ts";
-import type { ReRunStorage } from "./types.ts";
+import type { ReRunData, ReRunStorage, SignatureStatus } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
- * - "recheck" or the signature are in comments
+ * - "recheck" is in comments
  * - ignore label has been updated */
 export function reRunRequired(): boolean {
   if (ignoreLabelEvent()) return true;
   if (context.eventName !== "issue_comment") return false;
-  const signatureText = normalizeText(options.message.input.signature);
   const body = normalizeText(context.payload.comment?.body ?? "");
-  // edited comment
-  const from = normalizeText(context.payload.changes?.body?.from ?? "");
-  return !!body.startsWith(signatureText) || !!from.startsWith(signatureText) ||
-    body === normalizeText(options.message.input.reTrigger);
+  return body === normalizeText(options.message.input.reTrigger);
 }
 
-/** A re-run is needed to change the status of the workflow triggered by "pull_request_target"
+/** A re-run is needed to change the status of the workflow triggered by "pull_request_target" or "issues"
  * https://github.com/cla-assistant/github-action/issues/39 */
 export async function reRun() {
   const branch = await pr.branch();
@@ -27,7 +30,7 @@ export async function reRun() {
   const runs = await action.workflowRuns(
     branch,
     workflowId,
-    "pull_request_target",
+    context.payload.issue === undefined ? "pull_request_target" : "issues",
   );
 
   if (runs.total_count > 0) {
@@ -40,28 +43,53 @@ export async function reRun() {
   }
 }
 
-export const defaultReRunContent = {
+export const defaultReRunContent: ReRunStorage = {
   type: `${applicationType}/re-run`,
   version: storageVersion,
   data: [],
 };
 
-export interface ReRunContent {
-  content: ReRunStorage;
-  sha: string;
+export async function updateReRun(status: SignatureStatus) {
+  const file = await readReRunStorage();
+  storage.checkContent(file.content, defaultReRunContent);
+  const isCurrentWorkflow = (run: ReRunData[number]) =>
+    run.pullRequest === context.issue.number;
+
+  if (status.unsigned.length === 0) {
+    spliceArray(file.content.data, isCurrentWorkflow);
+  } else {
+    const run = file.content.data.find(isCurrentWorkflow);
+    if (run === undefined) {
+      file.content.data.push({
+        pullRequest: context.issue.number,
+        workflow: context.runId,
+        unsigned: status.unsigned.map((author) => author.user!.databaseId),
+      });
+    } else {
+      run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+    }
+  }
+
+  await writeReRunStorage(file);
 }
 
+export type ReRunContent = github.Content<ReRunStorage>;
+
 export async function readReRunStorage(): Promise<ReRunContent> {
-  const { content, sha } = await readGithubStorage({
-    type: "local",
-    ...options.reRun,
-  }, JSON.stringify(defaultReRunContent));
+  const { content, sha } = await storage.readGithub(
+    {
+      type: "local",
+      ...options.reRun,
+    },
+    JSON.stringify(defaultReRunContent),
+    "Creating re-run storage",
+  );
 
   return { content: JSON.parse(content), sha };
 }
 
-export async function writeReRunStorage(file: ReRunContent) {
-  await writeGithubStorage({
+async function writeReRunStorage(file: ReRunContent) {
+  await storage.writeGithub({
     content: JSON.stringify(file.content),
     sha: file.sha,
   }, {

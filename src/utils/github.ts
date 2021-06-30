@@ -1,4 +1,5 @@
 import type { octokit } from "./octokit.ts";
+import { Sha256 } from "../deps.ts";
 
 export type FileLocation = {
   owner: string;
@@ -7,15 +8,17 @@ export type FileLocation = {
   ref?: string;
 };
 
-export interface Content {
-  content: string;
+export interface Content<T> {
+  content: T;
   sha: string;
 }
+
+export type RawContent = Content<string>;
 
 export async function getFile<T>(
   kit: typeof octokit,
   location: FileLocation,
-): Promise<Content> {
+): Promise<RawContent> {
   const res = await kit.repos.getContent(location);
   if (Array.isArray(res.data)) {
     throw new Error(`File path is a directory: ${location.path}`);
@@ -39,7 +42,7 @@ export async function createOrUpdateFile(
   location: FileLocation,
   params: GithubFileUpdate,
   sha?: string,
-): Promise<Content> {
+): Promise<RawContent> {
   const res = await kit.repos.createOrUpdateFileContents({
     ...location,
     message: params.message,
@@ -50,5 +53,9 @@ export async function createOrUpdateFile(
       `Error occurred while creating ${location.path}: ${error.message}`,
     );
   });
-  return { content: params.content, sha: res.data.content.sha };
+  return {
+    content: params.content,
+    sha: res.data.content?.sha ??
+      new Sha256().update(params.content).toString(),
+  };
 }
