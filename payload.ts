@@ -6,7 +6,7 @@ console.log(Deno.inspect(context));
 
 console.log(context.repo)
 
-await personalOctokit.issues.createLabel({
+await octokit.issues.createLabel({
     ...context.repo,
     name: "CLA",
     color: "1DC515",
