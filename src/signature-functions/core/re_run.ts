@@ -2,6 +2,7 @@ import {
   action,
   context,
   github,
+  json,
   normalizeText,
   pr,
   spliceArray,
@@ -81,7 +82,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
       type: "local",
       ...options.storage.reRun,
     },
-    JSON.stringify(defaultReRunContent),
+    json.stringify(defaultReRunContent),
     "Creating re-run storage",
   );
 
@@ -90,7 +91,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
 
 async function writeReRunStorage(file: ReRunContent) {
   await storage.writeGithub({
-    content: JSON.stringify(file.content),
+    content: json.stringify(file.content),
     sha: file.sha,
   }, {
     type: "local",
