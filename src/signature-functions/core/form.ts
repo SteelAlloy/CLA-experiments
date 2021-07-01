@@ -26,7 +26,7 @@ export async function readForm(): Promise<github.RawContent> {
   try {
     const content = await github.getFile(octokit, {
       ...context.repo,
-      path: options.storage.form,
+      path: `.github/ISSUE_TEMPLATE/${options.storage.form}` ,
     });
     return content;
   } catch (error) {
