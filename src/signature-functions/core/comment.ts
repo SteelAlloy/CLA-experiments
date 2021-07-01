@@ -96,8 +96,8 @@ async function createBody(
     --------------------------------------------------------|\n\n`;
   }
   if (committerCount > 1) {
-    body += `- - -
-    ${text.summary}
+    body += `${text.summary} |
+    -------------------------|
     `.replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
@@ -105,7 +105,7 @@ async function createBody(
     }
     for (const { committer, url } of unsigned) {
       body += `:x: @${committer.user!.login} ${
-        preFilled ? `sign [here](${url.href})` : ""
+        preFilled ? `please sign [here](${url.href})` : ""
       } \n`;
     }
   }
@@ -117,6 +117,6 @@ async function createBody(
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return `${body}${text.footer.replace("${re-trigger}", input.reTrigger)}`
+  return `${body}\n${text.footer.replace("${re-trigger}", input.reTrigger)}`
     .replace(/\n( |\t)*/g, "\n");
 }
