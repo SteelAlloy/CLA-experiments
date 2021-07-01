@@ -46,7 +46,7 @@ async function createBody(
   status: SignatureStatus,
   form: Form,
 ): Promise<string> {
-  let body = `${commentAnchor}\n## Contributor Assistant | CLA\n`;
+  let body = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
   const text = options.message.comment;
   const input = options.message.input;
   if (status.unsigned.length === 0 && status.unknown.length === 0) {
@@ -106,7 +106,7 @@ async function createBody(
     }
     for (const { committer, url } of unsigned) {
       body += `:x: @${committer.user!.login} ${
-        preFilled ? `sign (here)[${url.href}]` : ""
+        preFilled ? `sign [here](${url.href})` : ""
       } \n`;
     }
   }
@@ -118,5 +118,5 @@ async function createBody(
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return body + text.footer.replace("${re-trigger}", input.reTrigger);
+  return body.replace(/\n\s*/, "") + text.footer.replace("${re-trigger}", input.reTrigger);
 }
