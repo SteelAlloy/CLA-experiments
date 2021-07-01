@@ -87,13 +87,15 @@ async function createBody(
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
   }
-  - - -`;
+  - - -
+  `;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
   if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
     body += `✍️ Please sign (here)[${unsigned[0].url.href}].
-    - - -`;
+    - - -
+    `;
   }
   if (committerCount > 1) {
     body += `${text.summary}\n`
