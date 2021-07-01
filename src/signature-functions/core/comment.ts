@@ -118,5 +118,5 @@ async function createBody(
   }
 
   return `${body}${text.footer.replace("${re-trigger}", input.reTrigger)}`
-    .replace(/\n\s*/g, "\n");
+    .replace(/\n( |\t)*/g, "\n");
 }
