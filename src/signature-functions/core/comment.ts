@@ -93,7 +93,7 @@ async function createBody(
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
   if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
-    body += `✍️ Please sign (here)[${unsigned[0].url.href}].
+    body += `✍️ Please sign [here](${unsigned[0].url.href}).
     - - -
     `;
   }
@@ -118,5 +118,6 @@ async function createBody(
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return body.replace(/\n\s*/, "") + text.footer.replace("${re-trigger}", input.reTrigger);
+  return `${body}${text.footer.replace("${re-trigger}", input.reTrigger)}`
+    .replace(/\n\s*/g, "");
 }
