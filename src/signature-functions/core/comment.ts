@@ -87,19 +87,18 @@ async function createBody(
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
   }
-  - - -
   `;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
   if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
-    body += `✍️ Please sign [here](${unsigned[0].url.href}).
-    - - -
-    `;
+    body += `✍️ Please sign [here](${unsigned[0].url.href}) |
+    --------------------------------------------------------|\n\n`;
   }
   if (committerCount > 1) {
-    body += `${text.summary}\n`
-      .replace("${signed}", status.signed.length.toString())
+    body += `- - -
+    ${text.summary}
+    `.replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
       body += `:white_check_mark: @${committer.user!.login}\n`;
