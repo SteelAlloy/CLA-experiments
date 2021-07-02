@@ -3,6 +3,11 @@
 > Delete the signature file on steps with the symbol 🔁 if you don't have more
 > than 2 users to test the action.
 
+## Prerequisites
+
+1. form
+2. label
+
 ## Basic features
 
 1. Create a PR with one user
