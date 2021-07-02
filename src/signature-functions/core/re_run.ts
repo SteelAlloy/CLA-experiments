@@ -20,7 +20,7 @@ export function reRunRequired(): boolean {
   if (ignoreLabelEvent()) return true;
   if (context.eventName !== "issue_comment") return false;
   const body = normalizeText(context.payload.comment?.body ?? "");
-  return body === normalizeText(options.message.input.reTrigger);
+  return body === normalizeText(options.message.reTrigger);
 }
 
 /** A re-run is needed to change the status of the workflow triggered by "pull_request_target" or "issues"
@@ -50,6 +50,12 @@ export const defaultReRunContent: ReRunStorage = {
   data: [],
 };
 
+/** Clear re-run cache */
+export async function clearReRun() {
+  await updateReRun({ signed: [], unsigned: [], unknown: [] });
+}
+
+/** Update re-run cache */
 export async function updateReRun(status: SignatureStatus) {
   const file = await readReRunStorage();
   storage.checkContent(file.content, defaultReRunContent);
@@ -84,7 +90,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
       ...options.storage.reRun,
     },
     json.stringify(defaultReRunContent),
-    "Creating re-run storage",
+    options.message.commit.reRunCreate,
   );
 
   return { content: JSON.parse(content), sha };
@@ -97,5 +103,5 @@ async function writeReRunStorage(file: ReRunContent) {
   }, {
     type: "local",
     ...options.storage.reRun,
-  }, "Updating re-run storage");
+  }, options.message.commit.reRunUpdate);
 }
