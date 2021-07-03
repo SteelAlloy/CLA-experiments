@@ -1,7 +1,7 @@
 name: Contributor Document
 description: Sign the Contributor Document
 title: "Document Signature"
-labels: ["duplicate", "bug"]
+labels: ["duplicate", "bug", "help wanted"]
 body:
 - type: markdown
   attributes:
