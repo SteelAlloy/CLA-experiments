@@ -14,7 +14,8 @@ import {
   writeSignatureStorage,
 } from "./signatures.ts";
 import { options } from "../options.ts";
-import { head } from "./comment.ts";
+import { head, missingIssueComment } from "./comment.ts";
+import { createSignatureLabel } from "./labels.ts";
 import type { Form } from "./types.ts";
 
 export function isForm(): boolean {
@@ -32,7 +33,23 @@ export async function readForm(): Promise<github.RawContent> {
     return content;
   } catch (error) {
     if (error.status === 404) {
-      action.fail("Issue form doesn't exist. Please create one.");
+      const template = await github.getFile(octokit, {
+        owner: "cla-assitant",
+        repo: "contributor-assistant",
+        path: "actions/signatures/examples/simple.yml",
+      });
+      const [content] = await Promise.all([
+        github.createOrUpdateFile(octokit, {
+          ...context.repo,
+          path: `.github/ISSUE_TEMPLATE/${options.storage.form}`,
+        }, {
+          message: options.message.commit.setup,
+          content: template.content,
+        }),
+        createSignatureLabel(),
+        missingIssueComment(),
+      ]);
+      return content;
     } else {
       action.fail(
         `Could not retrieve form content: ${error.message}. Status: ${error
@@ -84,11 +101,11 @@ export async function processForm() {
       signatureStorage.invalidated.push({
         form: signatureStorage.form,
         formSHA: signatureStorage.formSHA,
-        endDate: Date.now(),
+        endDate: new Date().toJSON(),
         signatures: signatureStorage.signatures,
       });
+      signatureStorage.signatures = [];
     }
-    signatureStorage.signatures = [];
     signatureStorage.form = form;
     signatureStorage.formSHA = currentFormSHA;
   }
@@ -101,7 +118,7 @@ export async function processForm() {
     action.debug("New signature found: supersede the previous one");
     signatureStorage.superseded.push({
       ...signatureStorage.signatures[previousSignatureIndex],
-      endDate: Date.now(),
+      endDate: new Date().toJSON(),
       formSHA: currentFormSHA,
     });
     signatureStorage.signatures.splice(previousSignatureIndex, 1);
@@ -114,7 +131,7 @@ export async function processForm() {
       login: context.payload.issue!.user.login,
     },
     issue: context.issue.number,
-    date: Date.now(),
+    date: new Date().toJSON(),
     fields,
   });
 

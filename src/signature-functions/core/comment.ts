@@ -42,7 +42,8 @@ export async function uncommentPR() {
   }
 }
 
-export const head = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
+const title = "## Contributor Assistant | Signatures";
+export const head = `${commentAnchor}\n\n${title}`;
 
 async function createBody(
   status: SignatureStatus,
@@ -59,7 +60,8 @@ async function createBody(
   );
   url.searchParams.append("template", options.storage.form);
   url.searchParams.append("title", form.title ?? "License Signature");
-  url.searchParams.append("labels", form.labels?.[0] ?? options.labels.form);
+  const labels = typeof form.labels === "string" ? [form.labels] : form.labels;
+  url.searchParams.append("labels", labels?.join(",") ?? options.labels.form);
 
   const githubKeys = extractIDs(form);
   const unsigned: { committer: GitActor; url: URL }[] = status.unsigned
@@ -68,7 +70,7 @@ async function createBody(
   if (githubKeys.length > 0) {
     const userInfo = await Promise.all(
       unsigned.map(({ committer }) =>
-        octokit.users.getByUsername({
+        octokit.rest.users.getByUsername({
           username: committer.user!.login,
         })
       ),
@@ -122,4 +124,14 @@ async function createBody(
     text.footer.replace("${re-trigger}", options.message.reTrigger)
   }`
     .replace(/\n( |\t)*/g, "\n");
+}
+
+export async function missingIssueComment() {
+  const repo = await action.repo();
+  const body = `${title}
+  ⚠ ${
+    repo.owner?.login !== undefined ? `@${repo.owner?.login}` : ""
+  } Issue form doesn't exist, I created one for you. I advise you to modify this template to suit your needs. ⚠
+  `;
+  await pr.createComment(body.replace(/\n( |\t)*/g, "\n"));
 }
