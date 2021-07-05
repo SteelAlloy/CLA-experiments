@@ -43,7 +43,7 @@ export async function uncommentPR() {
 }
 
 const title = "## Contributor Assistant | Signatures";
-export const head = `${commentAnchor}\n\n${title}`;
+export const head = `${commentAnchor}\n${title}\n`;
 
 async function createBody(
   status: SignatureStatus,
