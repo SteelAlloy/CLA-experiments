@@ -34,8 +34,8 @@ export async function readForm(): Promise<github.RawContent> {
   } catch (error) {
     if (error.status === 404) {
       const template = await github.getFile(octokit, {
-        owner: "cla-assitant",
-        repo: "contributor-assistant",
+        owner: "oganexon",
+        repo: "CLA-experiments",
         path: "actions/signatures/examples/simple.yml",
       });
       const [content] = await Promise.all([
