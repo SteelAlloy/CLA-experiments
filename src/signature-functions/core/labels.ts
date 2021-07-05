@@ -1,4 +1,4 @@
-import { action, context, octokit, pr } from "../../utils.ts";
+import { context, octokit, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
@@ -42,7 +42,7 @@ export async function createSignatureLabel() {
     ...context.repo,
     name: options.labels.form,
     description: "A document signature",
-  }).catch((error) => {
+  }).catch((_error) => {
     // bug: error.code is deprecated but error.status doesn't exist
     /* if (error.status !== "already_exists") {
       action.fail(

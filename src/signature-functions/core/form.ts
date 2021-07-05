@@ -33,6 +33,7 @@ export async function readForm(): Promise<github.RawContent> {
     return content;
   } catch (error) {
     if (error.status === 404) {
+      action.warning("Issue form doesn't exit. Creating one from template...");
       const template = await github.getFile(octokit, {
         owner: "oganexon",
         repo: "CLA-experiments",
