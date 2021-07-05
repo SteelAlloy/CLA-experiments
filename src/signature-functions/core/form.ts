@@ -47,8 +47,8 @@ export async function readForm(): Promise<github.RawContent> {
           content: template.content,
         }),
         createSignatureLabel(),
-        missingIssueComment(),
       ]);
+      await missingIssueComment();
       return content;
     } else {
       action.fail(
