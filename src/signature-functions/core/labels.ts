@@ -44,7 +44,7 @@ export async function createSignatureLabel() {
     description: "A document signature",
   }).catch((error) => {
     console.log(error)
-    if (error.status !== "already_exists") {
+    if (error.code !== "already_exists") {
       action.fail(
         `The "${options.labels.form}" label couldn't be added automatically. Please add it manually.`,
       );
