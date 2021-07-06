@@ -94,7 +94,10 @@ async function createBody(
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
-  if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
+  if (
+    status.unsigned.length > 0 &&
+    (committerCount === 1 && status.unsigned.length === 1 || !preFilled)
+  ) {
     body += `✍️ Please sign [here](${unsigned[0].url.href}) ${
       committerCount === 1 ? `@${status.unsigned[0].user!.login}` : ""
     } |
