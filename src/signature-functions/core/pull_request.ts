@@ -14,12 +14,11 @@ import { readForm } from "./form.ts";
 
 /** Fetch committers, update signatures, notify the result in a PR comment */
 export async function updatePR() {
-  const [{ content: signatureContent }, { content: rawForm }, committers] =
-    await Promise.all([
-      readSignatureStorage(),
-      readForm(),
-      getCommitters(),
-    ]);
+  const [{ content: signatureContent }, committers] = await Promise.all([
+    readSignatureStorage(),
+    getCommitters(),
+  ]);
+  const { content: rawForm } = readForm();
   storage.checkContent(signatureContent, defaultSignatureContent);
 
   const status = getSignatureStatus(
