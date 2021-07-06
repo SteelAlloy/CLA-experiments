@@ -36,6 +36,9 @@ export async function reRun() {
     branch,
   );
 
+  action.debug("payload", context.payload);
+  action.debug("runs", runs);
+
   if (runs.total_count > 0) {
     const runId = runs.workflow_runs[0].id;
 
