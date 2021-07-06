@@ -32,12 +32,11 @@ export async function reRun() {
   ]);
   const runs = await action.workflowRuns(
     workflowId,
-    context.payload.issue === undefined ? "pull_request_target" : "issues",
+    context.payload.issue?.pull_request === undefined
+      ? "issues"
+      : "pull_request_target",
     branch,
   );
-
-  action.debug("payload", context.payload);
-  action.debug("runs", runs);
 
   if (runs.total_count > 0) {
     const runId = runs.workflow_runs[0].id;
