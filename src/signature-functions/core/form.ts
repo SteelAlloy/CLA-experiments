@@ -152,7 +152,9 @@ export async function processForm() {
           "pull_request_target",
         ).then(async (runs) => {
           console.log(runs);
-          await action.reRun(run.workflow);
+          if (runs.total_count > 0) {
+            await action.reRun(runs.workflow_runs[0].id);
+          }
         }),
       );
     }
