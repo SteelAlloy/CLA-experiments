@@ -18,6 +18,7 @@ export async function updatePR() {
     readSignatureStorage(),
     getCommitters(),
   ]);
+  // Error when fetching signature file and form at the same time
   const { content: rawForm } = await readForm();
   storage.checkContent(signatureContent, defaultSignatureContent);
 

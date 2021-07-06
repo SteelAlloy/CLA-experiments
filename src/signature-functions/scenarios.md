@@ -3,10 +3,14 @@
 > Delete the signature file on steps with the symbol 🔁 if you don't have more
 > than 2 users to test the action.
 
+## Tips
+
+Set `ACTIONS_STEP_DEBUG` to `true`
+
 ## Prerequisites
 
 1. Create `.github/workflows/signatures.yml` action
-2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form
+2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form (simple template)
 3. Create `signature form` label
 
 ## Basic features
@@ -47,10 +51,10 @@
 
 ## Edge cases
 
-1. 🔁 Create a PR with a co-authored commit
+1. 🔁 Create a PR with a co-authored commit (`Co-authored-by: Username <Username@users.noreply.github.com>`)
    - _Basic features step 3 and 4_
 
-2. 🔁 Create a PR with a co-authored commit (unknown user)
+2. 🔁 Create a PR with a co-authored commit (unknown user: `Co-authored-by: Foo <foo@example.com>`)
    - A comment is created, with some warnings
    - `Failing` status
 
@@ -59,6 +63,14 @@
    - `Success` status
 
 4. 🔁 Create a PR with an unknown user
+   
+   💡 **tip** : change `.git/config`
+```ini
+[user]
+	name = Foo
+	email = foo@example.com
+```
+
    - A comment is created, with some warnings
    - `Failing` status
 
@@ -81,13 +93,20 @@
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Modify the issue form
+5. Modify the issue form (comprehensive template)
 
 6. Create a new PR
    - `Failing` status
 
 7. Set `prevent-signature-invalidation` to `true`
    - `Success` status
+
+8. Set `prevent-signature-invalidation` to `false`
+9. Sign the CLA
+   - Fields should be pre-filled
+
+10. Re-sign the CLA
+   - Should supersede the previous signature
 
 ## Storage
 
