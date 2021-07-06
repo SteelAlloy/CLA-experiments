@@ -151,7 +151,6 @@ export async function processForm() {
           run.workflow,
           "pull_request_target",
         ).then(async (runs) => {
-          console.log(runs);
           if (runs.total_count > 0) {
             await action.reRun(runs.workflow_runs[0].id);
           }
