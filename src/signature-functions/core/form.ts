@@ -147,14 +147,15 @@ export async function processForm() {
   for (const run of reRunContent.data) {
     if (run.unsigned.includes(databaseId)) {
       reRuns.push(
-        action.workflowRuns(
+        action.reRun(run.workflow)
+        /* action.workflowRuns(
           run.workflow,
           "pull_request_target",
         ).then(async (runs) => {
           if (runs.total_count > 0) {
             await action.reRun(runs.workflow_runs[0].id);
           }
-        }),
+        }), */
       );
     }
   }
