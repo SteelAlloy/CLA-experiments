@@ -14,6 +14,8 @@ export default async function main(rawOptions: Options) {
 
   setupOptions(rawOptions);
 
+  action.debug("payload", context.payload)
+
   try {
     if (context.eventName === "issues") {
       if (isForm()) {
