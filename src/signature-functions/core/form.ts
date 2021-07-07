@@ -144,9 +144,17 @@ export async function processForm() {
   const reRuns: Promise<void>[] = [];
 
   await writeSignature;
-  for (const {unsigned, runId} of reRunContent.data) {
+  for (const { unsigned, runId } of reRunContent.data) {
     if (unsigned.includes(databaseId)) {
-      reRuns.push(action.reRun(runId).catch(err => console.log(err)));
+      reRuns.push(
+        action.reRun(runId).catch((err) => {
+          if (
+            !err?.message.match(/This workflow is already re-running/)
+          ) {
+            throw err;
+          }
+        }),
+      );
     }
   }
   await Promise.all([...reRuns]);
