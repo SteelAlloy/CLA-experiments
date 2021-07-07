@@ -26,6 +26,7 @@ export function reRunRequired(): boolean {
 /** A re-run is needed to change the status of the workflow triggered by "pull_request_target" or "issues"
  * https://github.com/cla-assistant/github-action/issues/39 */
 export async function reRun() {
+  console.log(context.payload)
   const isIssue = context.payload.issue !== undefined &&
     context.payload.issue?.pull_request === undefined;
   const [branch, workflowId] = await Promise.all([
