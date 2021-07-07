@@ -7,12 +7,6 @@
 
 Set `ACTIONS_STEP_DEBUG` to `true`
 
-## Prerequisites
-
-1. Create `.github/workflows/signatures.yml` action
-2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form (simple template)
-3. Create `signature form` label
-
 ## Basic features
 
 1. Create a PR with one user

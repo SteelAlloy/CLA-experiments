@@ -5,35 +5,38 @@ export type { GitActor, User };
 
 /* --- Signatures --- */
 
-export interface AuthorSignature {
-  user: User;
-  issue: number;
-  date: string;
-  fields: unknown[];
-}
-
-export interface SupersededSignature extends AuthorSignature {
-  endDate: string;
-  formSHA: string;
-}
-
 export interface SignatureStatus {
   signed: GitActor[];
   unsigned: GitActor[];
   unknown: GitActor[];
 }
 
-export interface SignatureData {
+export interface AuthorSignature {
+  user: User;
+  issue: string;
+  date: string;
+  fields: unknown[];
+}
+
+export interface CurrentSignatures {
   form: Form;
   formSHA: string;
   signatures: AuthorSignature[];
-  superseded: SupersededSignature[];
-  invalidated: {
-    form: Form;
-    formSHA: string;
-    endDate: string;
-    signatures: AuthorSignature[];
-  }[];
+}
+
+export interface InvalidatedSignatures extends CurrentSignatures {
+  endDate: string;
+}
+
+export interface PreviousSignatures extends AuthorSignature {
+  endDate: string;
+  formSHA: string;
+}
+
+export interface SignatureData {
+  current: CurrentSignatures;
+  previous: PreviousSignatures[];
+  invalidated: InvalidatedSignatures[];
 }
 
 export interface SignatureStorage extends storage.Storage {
