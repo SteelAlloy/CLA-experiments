@@ -147,13 +147,7 @@ export async function processForm() {
   for (const { unsigned, runId } of reRunContent.data) {
     if (unsigned.includes(databaseId)) {
       reRuns.push(
-        action.reRun(runId).catch((err) => {
-          if (
-            !err?.message.match(/This workflow is already re-running/)
-          ) {
-            throw err;
-          }
-        }),
+        action.reRun(runId),
       );
     }
   }
