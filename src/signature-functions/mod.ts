@@ -13,7 +13,9 @@ export default async function main(rawOptions: Options) {
   action.info("Contributor Assistant: Signature process started");
 
   setupOptions(rawOptions);
-  
+
+  console.log(Deno.env.toObject)
+
   try {
     if (context.eventName === "issues") {
       if (isForm()) {
