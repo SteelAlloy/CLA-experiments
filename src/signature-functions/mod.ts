@@ -14,7 +14,7 @@ export default async function main(rawOptions: Options) {
 
   setupOptions(rawOptions);
 
-  console.log(Deno.env.toObject)
+  console.log(Deno.env.toObject())
 
   try {
     if (context.eventName === "issues") {
