@@ -13,9 +13,7 @@ export default async function main(rawOptions: Options) {
   action.info("Contributor Assistant: Signature process started");
 
   setupOptions(rawOptions);
-
-  action.debug("payload", context.payload)
-
+  
   try {
     if (context.eventName === "issues") {
       if (isForm()) {

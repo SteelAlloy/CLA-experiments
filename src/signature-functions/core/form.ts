@@ -146,7 +146,7 @@ export async function processForm() {
   await writeSignature;
   for (const {unsigned, runId} of reRunContent.data) {
     if (unsigned.includes(databaseId)) {
-      reRuns.push(action.reRun(runId));
+      reRuns.push(action.reRun(runId).catch(err => console.log(err)));
     }
   }
   await Promise.all([...reRuns]);
