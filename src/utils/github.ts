@@ -53,9 +53,6 @@ export async function createOrUpdateFile(
       `Error occurred while creating ${location.path}: ${error.message}`,
     );
   });
-  console.log(res.data.content)
-  console.log(res.data.content?.sha ??
-    new Sha256().update(params.content).toString())
   return {
     content: params.content,
     sha: res.data.content?.sha ??

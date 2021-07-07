@@ -51,10 +51,12 @@ Set `ACTIONS_STEP_DEBUG` to `true`
 
 ## Edge cases
 
-1. 🔁 Create a PR with a co-authored commit (`Co-authored-by: Username <Username@users.noreply.github.com>`)
+1. 🔁 Create a PR with a co-authored commit
+   (`Co-authored-by: Username <Username@users.noreply.github.com>`)
    - _Basic features step 3 and 4_
 
-2. 🔁 Create a PR with a co-authored commit (unknown user: `Co-authored-by: Foo <foo@example.com>`)
+2. 🔁 Create a PR with a co-authored commit (unknown user:
+   `Co-authored-by: Foo <foo@example.com>`)
    - A comment is created, with some warnings
    - `Failing` status
 
@@ -63,20 +65,21 @@ Set `ACTIONS_STEP_DEBUG` to `true`
    - `Success` status
 
 4. 🔁 Create a PR with an unknown user
-   
+
    💡 **tip** : change `.git/config`
+
 ```ini
 [user]
 	name = Foo
 	email = foo@example.com
 ```
 
-   - A comment is created, with some warnings
-   - `Failing` status
+- A comment is created, with some warnings
+- `Failing` status
 
 ## Advanced features
 
-1. 🔁 Add a user to the ignore list and create a new PR with this user
+1. 🔁 Add a user to the `ignore-list` and create a new PR with this user
    - No comment is created
    - `Success` status
 
@@ -93,20 +96,27 @@ Set `ACTIONS_STEP_DEBUG` to `true`
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Modify the issue form (comprehensive template)
-
-6. Create a new PR
-   - `Failing` status
-
-7. Set `prevent-signature-invalidation` to `true`
+5. Set `ignore-label` & label a PR
+   - The comment is removed
+   - CLA labels are removed
    - `Success` status
 
-8. Set `prevent-signature-invalidation` to `false`
-9. Sign the CLA
-   - Fields should be pre-filled
+6. Modify the issue form (comprehensive template)
 
-10. Re-sign the CLA
-   - Should supersede the previous signature
+7. Create a new PR
+   - `Failing` status
+
+8. Set `prevent-signature-invalidation` to `true`
+   - `Success` status
+
+9. Set `prevent-signature-invalidation` to `false`
+10. Sign the CLA
+
+- Fields should be pre-filled
+
+12. Re-sign the CLA
+
+- Should supersede the previous signature
 
 ## Storage
 

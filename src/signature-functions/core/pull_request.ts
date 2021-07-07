@@ -36,7 +36,7 @@ export async function updatePR() {
 
   if (
     status.unsigned.length === 0 &&
-    (status.signed.length > 1 || status.unknown.length === 0)
+    (status.signed.length > 0 || status.unknown.length === 0)
   ) {
     action.info(options.message.comment.allSigned);
   } else {
