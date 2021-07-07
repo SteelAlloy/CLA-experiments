@@ -1,4 +1,4 @@
-import { bundled } from "./action.ts";
+import "./const.ts";
 
 /** Stringify a JSON object. Prettify only in development */
 export function stringify(object: unknown): string {

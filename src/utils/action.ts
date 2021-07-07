@@ -5,8 +5,6 @@ import type { RestEndpointMethodTypes } from "../deps.ts";
 /* /!\ @actions/core is not available yet under Deno
 https://cdn.skypack.dev/error/node:node:os?from=@actions/core */
 
-export const bundled = Deno.mainModule.split("/").pop() === "bundle.js";
-
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {
