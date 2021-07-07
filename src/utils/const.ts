@@ -11,7 +11,7 @@ declare global {
 
 Object.defineProperty(globalThis, "bundled", {
   value: true,
-  writable: false,
+  writable: true,
   enumerable: false,
   configurable: false,
 });
