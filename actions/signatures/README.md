@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="./assets/cla_signature2.png">
+  <img src="./assets/cla_signature3.png">
 </p>
 
 ## Getting Started 🚀
