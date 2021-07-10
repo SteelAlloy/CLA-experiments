@@ -23,86 +23,124 @@
 </p>
 
 <p align="center">
-  This <a href="https://github.com/features/actions">GitHub Action</a> will automatically check for signatures when submitting a <a href="https://docs.github.com/en/github/collaborating-with-pull-requests">Pull Request</a>. It can be configured to use any document you'd like, including <b>CLA</b> and <b>DCO</b>. It can also handle cross repository signatures and works with <a href="https://github.com/enterprise">GitHub Enterprise</a> too.
+  This <a href="https://github.com/features/actions">GitHub Action</a> will automatically check for committer signatures when submitting a <a href="https://docs.github.com/en/github/collaborating-with-pull-requests">Pull Request</a>. It can be configured to use any document you'd like, including <b>CLA</b> and <b>DCO</b>. It can also handle cross repository signatures and works with <a href="https://github.com/enterprise">GitHub Enterprise</a> too.
 </p>
 
 <p align="center">
-  <img src="./assets/cla_signature4.png">
+  <img src="./assets/cla_signature.png" alt="Signature checkbox">
 </p>
 
 ## Getting Started 🚀
 
-You can include the action in your workflow to trigger on any event that [GitHub actions supports](https://help.github.com/en/articles/events-that-trigger-workflows). If the remote branch that you wish to deploy to doesn't already exist the action will create it for you. Your workflow will also need to include the `actions/checkout` step before this workflow runs in order for the deployment to work.
+### Workflow
 
-You can view an example of this below.
+We recommend to create a dedicated workflow for this action. Indeed, there are many [events](https://help.github.com/en/articles/events-that-trigger-workflows) that trigger it and you should keep all of them.
+
+Add the following file to your repository in the workflows directory, for example `.github/workflows/request-signatures.yml`
 
 ```yml
-name: Build and Deploy
-on: [push]
+name: Contributor Assistant - Signature Assistant
+
+on:
+  issues: # Signature tracking
+    types: [labeled] 
+  issue_comment: # Re-trigger the action
+    types: [created] 
+  pull_request_target: # Pull Request updates
+    types: [opened,synchronize,closed,reopened,labeled,unlabeled] 
+
 jobs:
-  build-and-deploy:
+  signature_assistant:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install
-          npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+      - name: Signature Assistant ✍️
+        if : github.event.label.name == 'signature form' || github.event.comment.body == 'recheck' || github.event.issue.pull_request || github.event_name == 'pull_request_target' # various conditions to limit the triggering of the action
+        uses: cla-assistant/contributor-assistant/actions/signatures@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details below.
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: build # The folder the action should deploy.
+          form-path: 'signature-form.yml' # The document committers will see when they sign.
 ```
 
-If you'd like to make it so the workflow only triggers on push events to specific branches then you can modify the `on` section.
+If you would like to change the triggering conditions, please refer to the customization section.
+
+It's recommended that you use [Dependabot](https://dependabot.com/github-actions/) to keep your workflow up-to-date. You can find the latest tagged version on the [GitHub Marketplace](https://github.com/marketplace/actions/contributor-assistant) or on the [releases page](https://github.com/cla-assistant/contributor-assistant/releases).
+
+### Signature form
+
+If you do not add a form to your repository, a new one will be generated automatically from a [template](./examples/template.yml). But it is advisable to create one manually, because you will probably want to [modify it]() to suit your needs.
+
+<details><summary>You can view a full example of this here.</summary>
+<p>
 
 ```yml
-on:
-  push:
-    branches:
-      - main
+name: Contributor Document
+description: Sign the Contributor Document
+title: "Document Signature"
+labels: ["signature form"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      # Contributor Document
+
+      This document defines the basics on how people can cooperate with me in general.
+
+      ## Open Source
+
+      I'm a fan of Open Source Software as it accelerates the overall progress in my opinion.  
+      If you contribute to one of my repositories this means that you do not have any monetary / licensing or whatever claims out of those contributions. 
+      I claim the right to use whatever license I want for my repositories (e.g. GNU AGPL...).
+
+      ## Freedom
+
+      I claim the right to change my repositories in whatever way I like as time goes by. If a contributor wants to develop things into a different direction than I, the corresponding contributor can do this in his own repository. 
+
+      ## Fairness
+
+      Each contributor should have the best of intentions when it comes to fairness and mutual support.
+- type: checkboxes
+  id: signature # required
+  attributes:
+    label: Signature
+    options:
+    - label: I have read the Contributor Document and I hereby sign this document.
+      required: true
+  validations:
+    required: true
 ```
 
-It's recommended that you use [Dependabot](https://dependabot.com/github-actions/) to keep your workflow up-to-date. You can find the latest tagged version on the [GitHub Marketplace](https://github.com/marketplace/actions/deploy-to-github-pages) or on the [releases page](https://github.com/JamesIves/github-pages-deploy-action/releases).
+</p>
+</details>
 
-#### Install as a Node Module 📦
+❗ [Creating a label](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels#creating-a-label) for this form is also very important. It will be used to detect new signatures, by default this label is `signature form`. You can change it in the inputs.
 
-If you'd like to use the functionality provided by this action in your own action you can install it using [yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/get-npm) by running the following commands. It's available on both the [npm](https://www.npmjs.com/package/@jamesives/github-pages-deploy-action) and [GitHub registry](https://github.com/JamesIves/github-pages-deploy-action/packages/229985).
+## Use as a Deno Module 📦
 
-```
-yarn add @jamesives/github-pages-deploy-action
-```
+If you'd like to use the functionality provided by this action in your own action you can import it from github.
 
-```
-npm install @jamesives/github-pages-deploy-action
-```
-
-It can then be imported into your project like so.
-
-```javascript
-import run from '@jamesives/github-pages-deploy-action'
+```ts
+import signatureCheck from "https://raw.githubusercontent.com/cla-assistant/contributor-assistant/main/src/signature-functions/mod.ts";
+// Or
+import signatureCheck from "https://denopkg.com/cla-assistant/contributor-assistant/src/signature-functions/mod.ts";
 ```
 
-Calling the functions directly will require you to pass in an object containing the variables found in the configuration section, you'll also need to provide a `workspace` with a path to your project.
+Calling the functions directly will require you to pass in an object containing the variables found in the configuration section.
 
-```javascript
-import run from '@jamesives/github-pages-deploy-action'
-
-run({
-  token: process.env['ACCESS_TOKEN'],
-  branch: 'gh-pages',
-  folder: 'build',
-  repositoryName: 'JamesIves/github-pages-deploy-action',
-  silent: true,
-  workspace: 'src/project/location'
-})
+```ts
+await signatureCheck({
+  storage: {
+    form: "signature-form.yml",
+  },
+  ignoreList: ["bot*"],
+  labels: {
+    form: "signature form",
+  },
+});
 ```
 
-For more information regarding the [action interface please click here](https://github.com/JamesIves/github-pages-deploy-action/blob/dev/src/constants.ts#L7).
+For more information regarding the [action interface please click here](https://github.com/cla-assistant/contributor-assistant/blob/main/src/signature-functions/options.ts).
 
 ## Configuration 📁
 
@@ -110,233 +148,201 @@ The `with` portion of the workflow **must** be configured before the action will
 
 #### Required Setup
 
-The following options must be configured in order to make a deployment.
+The following options must be configured in order to check for signatures.
 
-| Key      | Value Information                                                                                                                                                                                                                                                                        | Type   | Required |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
-| `branch` | This is the branch you wish to deploy to, for example `gh-pages` or `docs`.                                                                                                                                                                                                              | `with` | **Yes**  |
-| `folder` | The folder in your repository that you want to deploy. If your build script compiles into a directory named `build` you'd put it here. If you wish to deploy the root directory you can place a `.` here. You can also utilize absolute file paths by appending `~` to your folder path. | `with` | **Yes**  |
+| Key                     | Value Information                                                                                                                                                                                                                                                                                                                      | Type            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| `GITHUB_TOKEN`          | GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}.                                                                                                                                                                | `env` or `with` |
+| `PERSONAL_ACCESS_TOKEN` | A token you have generated that will be used to access the GitHub API (re-run endpoint and remote repositories). You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. | `env` or `with` | `with` | **Yes** |
+| `form-path`             | The document which shall be signed by the contributor(s). Must be an issue form (yml file)                                                                                                                                                                                                                                             | `with`          |
 
-By default the action does not need any token configuration and uses the provided repository scoped GitHub token to make the deployment. If you require more customization you can modify the deployment type using the following options.
+#### Optional Setup
 
-| Key       | Value Information                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Type   | Required |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
-| `token`   | This option defaults to the repository scoped GitHub Token. However if you need more permissions for things such as deploying to another repository, you can add a Personal Access Token (PAT) here. This should be stored in the `secrets / with` menu **as a secret**. We recommend using a service account with the least permissions necessary and recommend when generating a new PAT that you select the least permission scopes necessary. [Learn more about creating and using encrypted secrets here.](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets) | `with` | **No**   |
-| `ssh-key` | You can configure the action to deploy using SSH by setting this option to a private SSH key stored **as a secret**. It can also be set to `true` to use an existing SSH client configuration. For more detailed information on how to add your public/private ssh key pair please refer to the [Using a Deploy Key section of this README](https://github.com/JamesIves/github-pages-deploy-action/tree/dev#using-an-ssh-deploy-key-).                                                                                                                                                                                               | `with` | **No**   |
+All of these parameters go into the `with` part.
 
-#### Optional Choices
+| Key                              | Value Information                                                                                                                                                                                       | Default value                                                                                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signature-path`                 | The path where the signatures will be stored.                                                                                                                                                           | `".github/contributor-assistant/signatures.json"`                                                                                                                                       |
+| `signature-branch`               | The branch where the signatures will be stored.                                                                                                                                                         | *default branch*                                                                                                                                                                        |
+| `signature-remote-repo`          | The name of another repository to store the signatures.                                                                                                                                                 | *none*                                                                                                                                                                                  |
+| `signature-remote-owner`         | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.                                                                                            | *none*                                                                                                                                                                                  |
+| `re-run-path`                    | The path where the re-run cache will be stored.                                                                                                                                                         | `".github/contributor-assistant/signatures-re-run.json"`                                                                                                                                |
+| `re-run-branch`                  | The branch where the re-run cache will be stored.                                                                                                                                                       | *default branch*                                                                                                                                                                        |
+| `ignore-list`                    | A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. The separator between the patterns is a comma.                               | `""`                                                                                                                                                                                    |
+| `prevent-signature-invalidation` | Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. Default to false. | `false`                                                                                                                                                                                 |
+| `re-trigger`                     | The keyword to re-trigger signature checks.                                                                                                                                                             | `"recheck"`                                                                                                                                                                             |
+| `all-signed-comment`             | The posted comment when each committer has signed the document.                                                                                                                                         | `"All contributors have signed the CLA  ✍️ ✅"`                                                                                                                                           |
+| `comment-header`                 | Usually a message thanking the committers and asking them to sign the document.                                                                                                                         | `"Thank you for your submission, we appreciate it. Like many open-source projects, we ask that you sign our **Contributor License Agreement** before we can accept your contribution."` |
+| `signed-label`                   | A label that will be applied once all committers have signed the document                                                                                                                               | *none*                                                                                                                                                                                  |
+| `unsigned-label`                 | A label that will be applied until all committers have signed the document                                                                                                                              | *none*                                                                                                                                                                                  |
+| `ignore-label`                   | Add this label to skip the signature checks.                                                                                                                                                            | *none*                                                                                                                                                                                  |
+| `form-label`                     | The label used to find the document form.                                                                                                                                                               | `"signature form"`                                                                                                                                                                      |
 
-| Key                | Value Information                                                                                                                                                                                                                                                                                                                                                            | Type   | Required |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
-| `git-config-name`  | Allows you to customize the name that is attached to the git config which is used when pushing the deployment commits. If this is not included it will use the name in the GitHub context, followed by the name of the action.                                                                                                                                               | `with` | **No**   |
-| `git-config-email` | Allows you to customize the email that is attached to the git config which is used when pushing the deployment commits. If this is not included it will use the email in the GitHub context, followed by a generic noreply GitHub email.                                                                                                                                     | `with` | **No**   |
-| `repository-name`  | Allows you to specify a different repository path so long as you have permissions to push to it. This should be formatted like so: `JamesIves/github-pages-deploy-action`. You'll need to use a PAT in the `token` input for this configuration option to work properly.                                                                                                     | `with` | **No**   |
-| `target-folder`    | If you'd like to push the contents of the deployment folder into a specific directory on the deployment branch you can specify it here.                                                                                                                                                                                                                                      | `with` | **No**   |
-| `commit-message`   | If you need to customize the commit message for an integration you can do so.                                                                                                                                                                                                                                                                                                | `with` | **No**   |
-| `clean`            | You can use this option to delete files from your deployment destination that no longer exist in your deployment source. One use case is if your project generates hashed files that vary from build to build. Using `clean` will not affect `.git`, `.github`, or `.ssh` directories. This option is turned on by default, and can be toggled off by setting it to `false`. | `with` | **No**   |
-| `clean-exclude`    | If you need to use `clean` but you'd like to preserve certain files or folders you can use this option. This should contain each pattern as a single line in a multiline string.                                                                                                                                                                                             | `with` | **No**   |
-| `dry-run`          | Do not actually push back, but use `--dry-run` on `git push` invocations instead.                                                                                                                                                                                                                                                                                            | `with` | **No**   |
-| `single-commit`    | This option can be toggled to `true` if you'd prefer to have a single commit on the deployment branch instead of maintaining the full history. **Using this option will also cause any existing history to be wiped from the deployment branch**.                                                                                                                            | `with` | **No**   |
-| `silent`           | Silences the action output preventing it from displaying git messages.                                                                                                                                                                                                                                                                                                       | `with` | **No**   |
-| `workspace`        | This should point to where your project lives on the virtual machine. The GitHub Actions environment will set this for you. It is only necessary to set this variable if you're using the node module.                                                                                                                                                                       | `with` | **No**   |
+### Custom Fields
 
-With the action correctly configured you should see the workflow trigger the deployment under the configured conditions.
+<p align="center">
+  <img src="./assets/custom_fields.png" alt="Comprehensive form">
+</p>
 
-#### Deployment Status
-
-The action will export an environment variable called `deployment_status` that you can use in your workflow to determine if the deployment was successful or not. You can find an explanation of each status type below.
-
-| Status    | Description                                                                                     |
-| --------- | ----------------------------------------------------------------------------------------------- |
-| `success` | The `success` status indicates that the action was able to successfully deploy to the branch.   |
-| `failed`  | The `failed` status indicates that the action encountered an error while trying to deploy.      |
-| `skipped` | The `skipped` status indicates that the action exited early as there was nothing new to deploy. |
-
-This value is also set as a step output as `deployment-status`.
-
----
-
-### Using an SSH Deploy Key 🔑
-
-If you'd prefer to use an SSH deploy key as opposed to a token you must first generate a new SSH key by running the following terminal command, replacing the email with one connected to your GitHub account.
-
-```bash
-ssh-keygen -t rsa -m pem -b 4096 -C "youremailhere@example.com" -N ""
-```
-
-Once you've generated the key pair you must add the contents of the public key within your repository's [deploy keys menu](https://developer.github.com/v3/guides/managing-deploy-keys/). You can find this option by going to `Settings > Deploy Keys`, you can name the public key whatever you want, but you **do** need to give it write access. Afterwards add the contents of the private key to the `Settings > Secrets` menu as `DEPLOY_KEY`.
-
-With this configured you can then set the `ssh-key` part of the action to your private key stored as a secret.
-
-```yml
-- name: Deploy 🚀
-  uses: JamesIves/github-pages-deploy-action@4.1.4
-  with:
-    branch: gh-pages
-    folder: site
-    ssh-key: ${{ secrets.DEPLOY_KEY }}
-```
+If you need to collect detailed information about your contributors you can add so called "custom fields" to your form. You can use any input type defined by [GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema): markdown, textarea, input, dropdown, checkboxes.
 
 <details><summary>You can view a full example of this here.</summary>
 <p>
 
 ```yml
-name: Build and Deploy
-on:
-  push:
-    branches:
-      - main
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install
-          npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages
-          folder: build
-          clean: true
-          clean-exclude: |
-            special-file.txt
-            some/*.txt
-          ssh-key: ${{ secrets.DEPLOY_KEY }}
+name: Contributor License Agreement
+description: Sign the Contributor License Agreement
+title: "CLA Signature"
+labels: ["signature form"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thank you for your submission, we appreciate it.
+      Please read our [Contributor License Agreement](https://github.com/cla-assistant/github-action/blob/master/SAPCLA.md).
+- type: input
+  id: name
+  attributes:
+    label: Full Name
+    placeholder: ex. John Doe
+  validations:
+    required: false
+- type: input
+  id: email
+  attributes:
+    label: Email
+    description: How can we get in touch with you if we need more info?
+    placeholder: ex. email@example.com
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Age
+    description: Age in years
+    placeholder: "ex. 21"
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Additional information
+    description: Also tell us, do you have anything to share with us?
+    placeholder: I love open-source software
+    value: "Everything's good"
+  validations:
+    required: true
+- type: checkboxes
+  id: signature # required
+  attributes:
+    label: Signature
+    description: Like many open-source projects, we ask that you to sign our Contributor License Agreement before we can accept your contribution.
+    options:
+    - label: I have read the CLA Document and I hereby sign the CLA
+      required: true
+- type: dropdown
+  attributes:
+    label: How do you sign ?
+    description: On whose behalf do you sign?
+    options:
+    - I am signing on behalf of myself.
+    - I am signing on behalf of my employer.
+  validations:
+    required: true
 ```
 
 </p>
 </details>
 
-Alternatively if you've already configured the SSH client within a previous step you can set the `ssh-key` option to `true` to allow it to deploy using an existing SSH client. Instead of adjusting the client configuration it will simply switch to using GitHub's SSH endpoints.
 
----
-
-### Operating System Support 💿
-
-This action is primarily developed using [Ubuntu](https://ubuntu.com/). [In your workflow job configuration](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idruns-on) it's recommended to set the `runs-on` property to `ubuntu-latest`.
+The `signature` id field is mandatory in order to validate the signature. Currently only the `checkbox` type is supported, with a single box.
 
 ```yml
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+- type: checkboxes
+  id: signature # required
+  attributes:
+    label: Signature
+    options:
+    - label: I have read the Contributor Document and I hereby sign this document.
+      required: true
 ```
 
-If you're using an operating system such as [Windows](https://www.microsoft.com/en-us/windows/) you can workaround this using [artifacts](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/persisting-workflow-data-using-artifacts). In your workflow configuration you can utilize the `actions/upload-artifact` and `actions/download-artifact` actions to move your project built on a Windows job to a secondary job that will handle the deployment.
+You can also define which of required information can be taken from user's GitHub account. In that case Signature Assistant pre-fills the form with GitHub data (**Note**: only works with generated links in a PR). The possible values for the `id` fields can be found in the [GitHub-Api description](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.json) (`"public-user" key`).
 
-<details><summary>You can view an example of this pattern here.</summary>
-<p>
+Example:
 
 ```yml
-name: Build and Deploy
-on: [push]
-jobs:
-  build:
-    runs-on: windows-latest # The first job utilizes windows-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install
-          npm run build
-
-      - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
-        uses: actions/upload-artifact@v1
-        with:
-          name: site
-          path: build
-
-  deploy:
-    needs: [build] # The second job must depend on the first one to complete before running, and uses ubuntu-latest instead of windows.
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Download Artifacts 🔻 # The built project is downloaded into the 'site' folder.
-        uses: actions/download-artifact@v1
-        with:
-          name: site
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages
-          folder: 'site' # The deployment folder should match the name of the artifact. Even though our project builds into the 'build' folder the artifact name of 'site' must be placed here.
+- type: input
+  id: email # Automatically pre-fills with user's email
+  attributes:
+    label: Email
+    description: How can we get in touch with you if we need more info?
+    placeholder: ex. email@example.com
+  validations:
+    required: true
 ```
 
+## FAQ ❓
+
+### What should my Contributor License Agreement say?
+
+We're no lawyers, but we can suggest using http://contributoragreements.org/ for a fill-in-the-blank approach to creating a CLA tailored to your needs.
+
+### I need to request more information from the signer
+
+You can [add more fields in your form](#custom-fields).
+
+### I have entered incorrect information when I signed / I need to update my signature
+
+You just have to re-sign by opening a new issue. Your old signature will be preserved, as it is still associated with your previous contributions. The new signature is now valid.
+
+### My signature has not been taken into account
+
+It is likely that you signed at the same time as someone else, and a conflict may have arisen. In this case, comment `recheck` in the Pull Request or the related issue. If that doesn't solve the problem, please report the issue.
+
+### How can I share signatures between several repositories ?
+
+Using the inputs `signature-remote-repo` and `signature-remote-owner`, you can choose where to store your signatures. If several repositories point to the same file then their signatures will be shared.
+
+### What happens if I change the form ?
+
+By default the signatures are invalidated. If this is not the behavior you are looking for, you can set `prevent-signature-invalidation` to `true`.
+
+### How do I migrate old signatures from the [CLA Assistant Lite](https://github.com/cla-assistant/github-action) or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?
+
+The easiest way is to go to the conversion web page and drag'n'drop your json files. (⚠ Work in Progress)
+
+We also provide you with [scripts](../../src/signature-functions/compatibility) to convert json files into the new format.
+
+<!-- ### How can I contribute?
+
+You want to contribute to Contributor Assistant? Welcome! Please read [here](./CONTRIBUTING.md). -->
+
+## Upcoming features ✨
+
+ - Enhanced ignore list patterns
+ - Repository role pattern: ADMIN, CONTRIBUTOR, BOT, etc.
+ - Config file
+ - Signature status (env export) in the action
+
+## License
+
+Contributor License Agreement assistant
+
+Copyright (c) 2021 [SAP SE](http://www.sap.com) or an SAP affiliate company. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Credits
+
+<p align="center">
+    <img src="../../assets/sap.png" title="SAP" />
 </p>
-</details>
-
----
-
-### Using a Container 🚢
-
-If you use a [container](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idcontainer) in your workflow you may need to run an additional step to install `rsync` as this action depends on it. You can view an example of this below.
-
-```yml
-- name: Install rsync 📚
-  run: |
-    apt-get update && apt-get install -y rsync
-
-- name: Deploy 🚀
-  uses: JamesIves/github-pages-deploy-action@4.1.4
-```
-
----
-
-### Additional Build Files 📁
-
-If you're using a custom domain and require a `CNAME` file, or if you require the use of a `.nojekyll` file, you can safely commit these files directly into deployment branch without them being overridden after each deployment, additionally you can include these files in your deployment folder to update them. If you need to add additional files to the deployment that should be ignored by the build clean-up steps you can utilize the `clean-exclude` option.
-
-<details><summary>Click here to view an example of this.</summary>
-<p>
-
-```yml
-name: Build and Deploy
-on:
-  push:
-    branches:
-      - main
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm install
-          npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages
-          folder: build
-          clean: true
-          clean-exclude: |
-            special-file.txt
-            some/*.txt
-```
-
-</p>
-</details>
-
-If you wish to remove these files you must go into the deployment branch directly to remove them. This is to prevent accidental changes in your deployment script from creating breaking changes.
-
----
-
-## Support 💖
-
-This project would not be possible without all of our fantastic [contributors](https://github.com/JamesIves/github-pages-deploy-action/graphs/contributors) and [sponsors](https://github.com/sponsors/JamesIves). If you'd like to support the maintenance and upkeep of this project you can [donate via GitHub Sponsors](https://github.com/sponsors/JamesIves).
-
-<!-- sponsors --><!-- sponsors -->
