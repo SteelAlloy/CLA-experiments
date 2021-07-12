@@ -8,11 +8,8 @@ import {
 } from "../../utils.ts";
 import { marked, parseYaml, Sha256 } from "../../deps.ts";
 import { readReRunStorage } from "./re_run.ts";
-import {
-  defaultSignatureContent,
-  readSignatureStorage,
-  writeSignatureStorage,
-} from "./signatures.ts";
+import { readSignatureStorage, writeSignatureStorage } from "./signatures.ts";
+import { defaultSignatureContent } from "./default.ts";
 import { options } from "../options.ts";
 import { head, missingIssueComment } from "./comment.ts";
 import { createSignatureLabel } from "./labels.ts";
@@ -37,9 +34,9 @@ export async function readForm(): Promise<github.RawContent> {
         "Issue form doesn't exist. Creating a form from template...",
       );
       const template = await github.getFile(octokit, {
-        owner: "oganexon",
-        repo: "CLA-experiments",
-        path: "actions/signatures/examples/simple.yml",
+        owner: "cla-assistant",
+        repo: "contributor-assistant",
+        path: "actions/signatures/examples/template.yml",
       });
       const [content] = await Promise.all([
         github.createOrUpdateFile(octokit, {
@@ -131,7 +128,9 @@ export async function processForm() {
       databaseId,
       login: context.payload.issue!.user.login,
     },
-    issue: `${context.repo.owner}/${context.repo.repo}/${context.issue.number}`,
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue: context.issue.number,
     date: new Date().toJSON(),
     fields,
   });

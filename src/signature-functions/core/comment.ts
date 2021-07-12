@@ -43,7 +43,10 @@ export async function uncommentPR() {
 }
 
 const title = "## Contributor Assistant | Signatures";
-export const head = `${commentAnchor}\n${title}\n`;
+// const logo = '<div><img src="https://raw.githubusercontent.com/cla-assistant/contributor-assistant/main/actions/signatures/assets/logo.svg" align="right" alt="Signatures logo" width="64"></div>'
+const logo =
+  '<div><img src="https://raw.githubusercontent.com/oganexon/CLA-experiments/main/actions/signatures/assets/logo.svg" align="right" alt="Signatures logo" width="64"></div>';
+export const head = `${commentAnchor}\n\n${logo}\n\n${title}\n`;
 
 async function createBody(
   status: SignatureStatus,
@@ -87,9 +90,7 @@ async function createBody(
   }
 
   const committerCount = status.signed.length + status.unsigned.length;
-  body += `${
-    text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
-  }\n\n`;
+  body += `${text.header}\n\n`;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
@@ -116,7 +117,7 @@ async function createBody(
       } \n`;
     }
     for (const committer of status.unknown) {
-      body += `:grey_question: ${committer.name} (${committer.email}) \n`;
+      body += `:question: ${committer.name} (${committer.email}) \n`;
     }
   }
 
@@ -132,7 +133,7 @@ async function createBody(
 
 export async function missingIssueComment() {
   const repo = await action.repo();
-  const body = `${title}
+  const body = `${logo}\n\n${title}
   ⚠ ${
     repo.owner?.login !== undefined ? `@${repo.owner?.login}` : ""
   } Contributor Assistant Issue Form did not exist, I created one for you. I advise you to modify [this template](https://github.com/oganexon/CLA-experiments/blob/${repo.default_branch}/.github/ISSUE_TEMPLATE/${options.storage.form}) to suit your needs. ⚠
