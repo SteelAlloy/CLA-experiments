@@ -9,6 +9,7 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
+          cd web
           yarn install
           yarn build
 
@@ -16,4 +17,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
-          folder: web/build
+          folder: web/dist
