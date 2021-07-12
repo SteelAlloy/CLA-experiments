@@ -9,6 +9,7 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
+          cd web
           yarn install
           yarn build
 
