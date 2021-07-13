@@ -10,7 +10,7 @@ function escapeRegExp(string: string) {
 
 /** "*" is treated as a wildcard. */
 export function filterIgnored(committers: GitActor[]): GitActor[] {
-  // TODO(@oagnexon): refactor & add more patterns
+  // TODO(@oganexon): refactor & add more patterns
   return committers.filter((committer) =>
     !options.ignoreList.some((pattern) => {
       pattern = pattern.trim();
@@ -23,3 +23,10 @@ export function filterIgnored(committers: GitActor[]): GitActor[] {
     })
   );
 }
+
+/*
+ADMIN
+MAINTAINER
+COLLABORATOR
+BOT
+*/
