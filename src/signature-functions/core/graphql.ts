@@ -153,7 +153,7 @@ export interface PermissionResponse {
 }
 
 export const permissionQuery = gql`
-query permissions($owner: String!, $repo: String!, $query: String!) {
+query permissions($owner: String!, $repo: String!, $login: String!) {
   repository(owner: $owner, name: $repo) {
     collaborators(query: $login, first: 1) {
       edges {
