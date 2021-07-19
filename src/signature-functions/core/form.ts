@@ -34,8 +34,8 @@ export async function readForm(): Promise<github.RawContent> {
         "Issue form doesn't exist. Creating a form from template...",
       );
       const template = await github.getFile(octokit, {
-        owner: "cla-assistant",
-        repo: "contributor-assistant",
+        owner: "oganexon",
+        repo: "CLA-experiments",
         path: "actions/signatures/examples/template.yml",
       });
       const [content] = await Promise.all([
