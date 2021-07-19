@@ -5,7 +5,7 @@ import * as github from "./github.ts";
 import { setupOctokit } from "./octokit.ts";
 import type { Content } from "./storage.ts";
 
-const applicationType = "contributor-assistant/config"
+const applicationType = "contributor-assistant/config";
 
 export interface ConfigContent<T = Content> extends Content {
   type: typeof applicationType;
@@ -43,12 +43,19 @@ export async function pipeConfig<T extends Content>(
   try {
     const { content, sha } = await storage.readGithub(fileLocation);
     try {
-      configContent = { content: parseYaml(content) as ConfigContent<T> | T, sha };
+      configContent = {
+        content: parseYaml(content) as ConfigContent<T> | T,
+        sha,
+      };
     } catch (error) {
       action.fail(`Unable to parse config file: ${error}`);
     }
   } catch {
-    action.fail(`Config file doesn't exist: ${fileLocation}`);
+    action.fail(
+      `Config file doesn't exist: ${
+        Deno.inspect(fileLocation, { compact: false })
+      }`,
+    );
   }
 
   let update = false;
