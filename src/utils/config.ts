@@ -3,6 +3,7 @@ import * as storage from "./storage.ts";
 import * as action from "./action.ts";
 import * as github from "./github.ts";
 import { setupOctokit } from "./octokit.ts";
+import { removeEmpty } from "./misc.ts";
 import type { Content } from "./storage.ts";
 
 const applicationType = "contributor-assistant/config";
@@ -25,19 +26,21 @@ export async function pipeConfig<T extends Content>(
 ) {
   setupOctokit(flags.githubToken, flags.personalAccessToken);
 
-  const fileLocation = flags.configRemoteRepo.length > 0
-    ? {
-      type: "remote",
-      repo: flags.configRemoteRepo,
-      owner: flags.configRemoteOwner,
-      branch: flags.configBranch,
-      path: flags.configPath,
-    } as const
-    : {
-      type: "local",
-      branch: flags.configBranch,
-      path: flags.configPath,
-    } as const;
+  const fileLocation = removeEmpty(
+    flags.configRemoteRepo.length > 0
+      ? {
+        type: "remote",
+        repo: flags.configRemoteRepo,
+        owner: flags.configRemoteOwner,
+        branch: flags.configBranch,
+        path: flags.configPath,
+      } as const
+      : {
+        type: "local",
+        branch: flags.configBranch,
+        path: flags.configPath,
+      } as const,
+  );
 
   let configContent: github.Content<ConfigContent<T> | T>;
   try {
