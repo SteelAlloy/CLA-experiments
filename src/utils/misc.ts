@@ -37,7 +37,9 @@ export function escapeRegExp(str: string) {
 }
 
 /** Remove empty properties from object: undefined & empty strings */
-export function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
+export function removeEmpty<T extends Record<string, unknown> | undefined>(
+  obj: T,
+): T {
   for (const key in obj) {
     // @ts-ignore: deno type bug with the string comparaison
     if (obj[key] === undefined || obj[key] === "") {

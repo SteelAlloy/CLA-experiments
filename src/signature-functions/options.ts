@@ -1,4 +1,4 @@
-import { action, context, setupOctokit, removeEmpty } from "../utils.ts";
+import { action, context, removeEmpty, setupOctokit } from "../utils.ts";
 import type { DeepRequired, storage } from "../utils.ts";
 
 export interface Options {
