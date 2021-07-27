@@ -4,4 +4,4 @@ import { context } from "./src/utils.ts";
 
 console.log(Deno.inspect(context));
 
-console.log(Deno.inspect(context.payload.issue));
+console.log(Deno.inspect(context.payload.issue)); 
