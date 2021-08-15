@@ -12,6 +12,8 @@ import { parseYaml } from "../../deps.ts";
 import { extractIDs } from "./form.ts";
 import type { Form, User } from "./types.ts";
 
+octokit.rest.repos.stat
+
 const commentAnchor = generateCommentAnchor(applicationType);
 
 export async function commentPR(status: SignatureStatus, rawForm: string) {

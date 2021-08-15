@@ -30,6 +30,27 @@
   <img src="./assets/cla_signature.png" alt="Signature checkbox">
 </p>
 
+- [Getting Started 🚀](#getting-started-)
+  - [Workflow](#workflow)
+  - [Signature form](#signature-form)
+- [Use as a Deno Module 📦](#use-as-a-deno-module-)
+- [Configuration 📁](#configuration-)
+  - [Required Setup](#required-setup)
+  - [Optional Setup](#optional-setup)
+    - [Ignore list](#ignore-list)
+  - [Custom Fields](#custom-fields)
+  - [Config file](#config-file)
+- [FAQ ❓](#faq-)
+  - [What should my Contributor License Agreement say?](#what-should-my-contributor-license-agreement-say)
+  - [I need to request more information from the signer](#i-need-to-request-more-information-from-the-signer)
+  - [I have entered incorrect information when I signed / I need to update my signature](#i-have-entered-incorrect-information-when-i-signed--i-need-to-update-my-signature)
+  - [My signature has not been taken into account](#my-signature-has-not-been-taken-into-account)
+  - [How can I share signatures between several repositories ?](#how-can-i-share-signatures-between-several-repositories-)
+  - [What happens if I change the form ?](#what-happens-if-i-change-the-form-)
+  - [How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
+- [License 📜](#license-)
+- [Credits](#credits)
+
 ## Getting Started 🚀
 
 ### Workflow
@@ -58,9 +79,9 @@ jobs:
         uses: cla-assistant/contributor-assistant/actions/signatures@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details below.
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details in the configuration section.
         with:
-          form-path: 'signature-form.yml' # The document committers will see when they sign.
+          form-path: 'signature-form.yml' # The document committers will see when they sign (required)
           ignore-list: '@MAINTAINER'
 ```
 
@@ -71,9 +92,6 @@ It's recommended that you use [Dependabot](https://dependabot.com/github-actions
 ### Signature form
 
 If you do not add a form to your repository, a new one will be generated automatically from a [template](./examples/template.yml). But it is advisable to create one manually, because you will probably want to [modify it]() to suit your needs.
-
-<details><summary>You can view a full example of this here.</summary>
-<p>
 
 ```yml
 name: Contributor Document
@@ -112,9 +130,6 @@ body:
     required: true
 ```
 
-</p>
-</details>
-
 ❗ [Creating a label](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels#creating-a-label) for this form is also very important. It will be used to detect new signatures, by default this label is `signature form`. You can change it in the inputs.
 
 ## Use as a Deno Module 📦
@@ -134,7 +149,7 @@ await signatureCheck({
   storage: {
     form: "signature-form.yml",
   },
-  ignoreList: ["bot*"],
+  ignoreList: ["user1"],
   labels: {
     form: "signature form",
   },
@@ -151,11 +166,11 @@ The `with` portion of the workflow **must** be configured before the action will
 
 The following options must be configured in order to check for signatures.
 
-| Key                     | Value Information                                                                                                                                                                                                                                                                                                                      | Type            |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| `GITHUB_TOKEN`          | GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}.                                                                                                                                                                | `env` or `with` |
-| `PERSONAL_ACCESS_TOKEN` | A token you have generated that will be used to access the GitHub API (re-run endpoint and remote repositories). You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. | `env` or `with` | `with` | **Yes** |
-| `form-path`             | The document which shall be signed by the contributor(s). Must be an issue form (yml file)                                                                                                                                                                                                                                             | `with`          |
+| Key                     | Value Information                                                                                                                                                                                                                                                                                                                                                                       | Type            |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| `GITHUB_TOKEN`          | GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: `${{ secrets.GITHUB_TOKEN }}`.                                                                                                                                                                                                               | `env` or `with` |
+| `PERSONAL_ACCESS_TOKEN` | A token you have generated that will be used to access the GitHub API (re-run endpoint and remote repositories). You have to [create it with repo scope](https://github.com/settings/tokens/new) and store it in the repository's secrets with the name `PERSONAL_ACCESS_TOKEN`. Paste it by using the standard syntax for referencing secrets: `${{ secrets.PERSONAL_ACCESS_TOKEN }}`. | `env` or `with` |
+| `form-path`             | The document which shall be signed by the contributor(s). Must be an [issue form](#custom-fields) (yml file)                                                                                                                                                                                                                                                                            | `with`          |
 
 ### Optional Setup
 
@@ -169,7 +184,7 @@ All of these parameters go into the `with` part.
 | `signature-remote-owner`         | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.                                                                          | *none*                                                                                                                                                                                  |
 | `re-run-path`                    | The path where the re-run cache will be stored.                                                                                                                                       | `".github/contributor-assistant/signatures-re-run.json"`                                                                                                                                |
 | `re-run-branch`                  | The branch where the re-run cache will be stored.                                                                                                                                     | *default branch*                                                                                                                                                                        |
-| `ignore-list`                    | A list of users that will be ignored when checking for signatures, more details [below](#ignore-list). **Bots** are ignored by default.                                                               | `""`                                                                                                                                                                                    |
+| `ignore-list`                    | A list of users that will be ignored when checking for signatures, more details [below](#ignore-list). **Bots** are ignored by default.                                               | `""`                                                                                                                                                                                    |
 | `prevent-signature-invalidation` | Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. | `false`                                                                                                                                                                                 |
 | `re-trigger`                     | The keyword to re-trigger signature checks.                                                                                                                                           | `"recheck"`                                                                                                                                                                             |
 | `all-signed-comment`             | The posted comment when each committer has signed the document.                                                                                                                       | `"All contributors have signed the CLA  ✍️ ✅"`                                                                                                                                           |
@@ -205,9 +220,6 @@ The separator between the patterns is a comma.
 </p>
 
 If you need to collect detailed information about your contributors you can add so called "custom fields" to your form. You can use any input type defined by [GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema): markdown, textarea, input, dropdown, checkboxes.
-
-<details><summary>You can view a full example of this here.</summary>
-<p>
 
 ```yml
 name: Contributor License Agreement
@@ -269,10 +281,6 @@ body:
     required: true
 ```
 
-</p>
-</details>
-
-
 The `signature` id field is mandatory in order to validate the signature. Currently only the `checkbox` type is supported, with a single box.
 
 ```yml
@@ -298,6 +306,64 @@ Example:
     placeholder: ex. email@example.com
   validations:
     required: true
+```
+
+### Config file
+
+If you need more control over the behavior of the action, you can define all the above options and some other options in a yaml file. You can find the options interface [here](../../src/signature-functions/options.ts).
+
+This can also be useful if you want to share the configuration of the action over several depots, to support corporate-level contributors for example.
+
+There are additional parameters to specify where your configuration file is located.
+
+| Key                   | Value Information                                                                                            | Default value    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------- |
+| `config-path`         | The path of the config file.                                                                                 | *none*           |
+| `config-branch`       | The branch of the config file.                                                                               | *default branch* |
+| `config-remote-repo`  | The name of another repository to fetch the config file from.                                                | *none*           |
+| `config-remote-owner` | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner. | *none*           |
+
+**Example**
+
+```yml
+name: Contributor Assistant - Signature Assistant
+# [...]
+        uses: cla-assistant/contributor-assistant/actions/signatures@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          config-path: ".github/contributor-assistant/config.yml"
+```
+
+```yml
+# .github/contributor-assistant/config.yml
+type: contributor-assistant/signatures/config
+version: 1
+data:
+  storage:
+    form: signature-form.yml # required
+    signatures:
+      type: "local"
+      branch: "cla"
+      path: "signatures.yml"
+  comment:
+    summary: |
+      **${signed}** out of **${total}** committers have signed the document.
+  ignoreList: ["@CONTRIBUTOR", "user1"]
+```
+
+You can also create a global configuration file covering all the services of the contributor assistant.
+
+```yml
+type: contributor-assistant/config
+version: 1
+data:
+  - type: contributor-assistant/signatures/config
+    version: 1
+    data:
+      storage:
+        form: signature-form.yml
 ```
 
 ## FAQ ❓
@@ -326,7 +392,9 @@ Using the inputs `signature-remote-repo` and `signature-remote-owner`, you can c
 
 By default the signatures are invalidated. If this is not the behavior you are looking for, you can set `prevent-signature-invalidation` to `true`.
 
-### How do I migrate old signatures from the [CLA Assistant Lite](https://github.com/cla-assistant/github-action) or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?
+### How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?
+
+ℹ [CLA Assistant Lite repository](https://github.com/cla-assistant/github-action), [CLA Assistant Classic repository](https://github.com/cla-assistant/cla-assistant)
 
 The easiest way is to go to the [migration web interface](https://cla-assistant.github.io/contributor-assistant/) and upload your signatures.
 
@@ -336,14 +404,7 @@ We also provide you with [scripts](../../src/signature-functions/compatibility) 
 
 You want to contribute to Contributor Assistant? Welcome! Please read [here](./CONTRIBUTING.md). -->
 
-## Upcoming features ✨
-
- - Enhanced ignore list patterns
- - Repository role pattern: ADMIN, CONTRIBUTOR, BOT, etc.
- - Config file
- - Signature status (env export) in the action
-
-## License
+## License 📜
 
 Contributor License Agreement assistant
 
